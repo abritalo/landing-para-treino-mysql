@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SQL PRATICA — Exercícios MySQL</title>
+<title>MySQL PRATICA — Exercícios MySQL</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
@@ -17,9 +17,9 @@
   --border2:  #3A4560;
   --accent:   #4FFFB0;
   --accent2:  #00D4FF;
-  --warn:     #FFD166;
-  --text:     #E8EDF5;
-  --text2:    #8B96B0;
+  --warn:     #00D4FF;
+  --text:     #F0F4FF;
+  --text2:    #C0CCDD;
   --text3:    #5A6480;
   --green:    #4FFFB0;
   --red:      #FF6B6B;
@@ -165,7 +165,7 @@ body {
   padding: 24px 26px 20px; margin-bottom: 26px;
 }
 .module-intro h2 { font-family: var(--display); font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
-.module-intro p { font-size: .88rem; color: var(--text2); line-height: 1.65; }
+.module-intro p { font-size: .88rem; color: var(--text); line-height: 1.65; }
 .module-level {
   display: inline-block;
   background: rgba(255,255,255,.05); border: 1px solid var(--border);
@@ -225,7 +225,7 @@ body {
 }
 .level-estagio   { background: rgba(79,255,176,.12); color: #4FFFB0; border: 1px solid rgba(79,255,176,.25); }
 .level-jr        { background: rgba(0,212,255,.12);  color: #00D4FF; border: 1px solid rgba(0,212,255,.25); }
-.level-nao-estagio { background: rgba(255,209,102,.1); color: #FFD166; border: 1px solid rgba(255,209,102,.25); }
+.level-nao-estagio { background: rgba(0,212,255,.1); color: #00D4FF; border: 1px solid rgba(0,212,255,.25); }
 
 /* ── EX HEADER ── */
 .ex-module-badge {
@@ -259,7 +259,7 @@ body {
   font-family: var(--mono); font-size: .72rem; color: var(--accent2);
   font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 9px;
 }
-.fn-explainer p { font-size: .86rem; color: var(--text2); line-height: 1.65; margin-bottom: 7px; }
+.fn-explainer p { font-size: .86rem; color: var(--text); line-height: 1.65; margin-bottom: 7px; }
 .fn-explainer p:last-child { margin: 0; }
 .fn-explainer code {
   font-family: var(--mono); font-size: .8rem;
@@ -278,7 +278,7 @@ body {
   border-radius: var(--radius); padding: 16px 18px; margin-bottom: 18px;
 }
 .problem-box p { font-size: .9rem; color: var(--text); line-height: 1.7; }
-.problem-box strong { color: var(--warn); font-weight: 600; }
+.problem-box strong { color: var(--accent2); font-weight: 600; }
 .problem-box code {
   font-family: var(--mono); font-size: .8rem;
   background: var(--surface3); color: var(--accent2); padding: 1px 5px; border-radius: 3px;
@@ -287,7 +287,7 @@ body {
 .problem-box ul li { font-size: .9rem; color: var(--text); margin-bottom: 5px; }
 .problem-hint {
   margin-top: 12px; padding: 9px 13px;
-  background: rgba(255,209,102,.04); border: 1px solid rgba(255,209,102,.13);
+  background: rgba(0,212,255,.05); border: 1px solid rgba(0,212,255,.18);
   border-radius: 7px; font-size: .8rem; color: var(--text3);
   display: flex; align-items: flex-start; gap: 7px;
 }
@@ -375,10 +375,11 @@ body {
 .btn-solution {
   background: transparent; border: 1px solid var(--border); color: var(--text3);
   padding: 6px 13px; border-radius: 7px; font-size: .76rem;
-  cursor: pointer; font-family: var(--sans); transition: all .15s;
+  cursor: pointer; font-family: var(--sans); transition: all .2s;
   display: inline-flex; align-items: center; gap: 6px;
 }
-.btn-solution:hover { border-color: var(--border2); color: var(--text2); }
+.btn-solution:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,255,176,.07); }
+.btn-solution.active { background: rgba(79,255,176,.12); border-color: var(--accent); color: var(--accent); font-weight: 600; }
 .solution-block { display: none; margin-top: 10px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); animation: fadeIn .2s ease; }
 .solution-block.open { display: block; }
 .solution-bar { background: var(--surface2); padding: 7px 13px; font-size: .65rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); font-family: var(--mono); }
@@ -395,12 +396,12 @@ body {
 .mod-1 .ex-module-badge, .ex-module-badge.mod-1 { background: rgba(79,255,176,.1);  color: #4FFFB0; border: 1px solid rgba(79,255,176,.22); }
 .mod-2 .ex-module-badge, .ex-module-badge.mod-2 { background: rgba(192,132,252,.1); color: #C084FC; border: 1px solid rgba(192,132,252,.22); }
 .mod-3 .ex-module-badge, .ex-module-badge.mod-3 { background: rgba(0,212,255,.1);   color: #00D4FF; border: 1px solid rgba(0,212,255,.22); }
-.mod-4 .ex-module-badge, .ex-module-badge.mod-4 { background: rgba(255,209,102,.1); color: #FFD166; border: 1px solid rgba(255,209,102,.22); }
+.mod-4 .ex-module-badge, .ex-module-badge.mod-4 { background: rgba(0,212,255,.1); color: #00D4FF; border: 1px solid rgba(0,212,255,.22); }
 .mod-5 .ex-module-badge, .ex-module-badge.mod-5 { background: rgba(255,107,107,.1); color: #FF6B6B; border: 1px solid rgba(255,107,107,.22); }
 .ex-number.mod-1 { color: #4FFFB0; }
 .ex-number.mod-2 { color: #C084FC; }
 .ex-number.mod-3 { color: #00D4FF; }
-.ex-number.mod-4 { color: #FFD166; }
+.ex-number.mod-4 { color: #00D4FF; }
 .ex-number.mod-5 { color: #FF6B6B; }
 
 /* ── CONFETTI ── */
@@ -555,17 +556,36 @@ body {
   align-items: flex-end; padding: 14px 7px 14px 0;
   pointer-events: none; overflow: hidden;
   user-select: none;
+  z-index: 3;
 }
 .editor-line-num {
   font-size: .72rem; color: var(--text3); line-height: 1.7;
   min-height: calc(1.7 * 0.86rem);
 }
+/* The highlight backdrop sits between line-numbers and the textarea */
+.sql-highlight {
+  position: absolute;
+  top: 0; left: 38px; right: 0; bottom: 0;
+  padding: 14px 14px 14px 14px;
+  font-family: var(--mono); font-size: .86rem;
+  line-height: 1.7;
+  white-space: pre-wrap; word-break: break-all;
+  pointer-events: none;
+  color: transparent; /* only the spans are visible */
+  z-index: 1;
+  overflow: hidden;
+}
 .sql-editor-bolt {
-  width: 100%; background: transparent; border: none; outline: none;
-  color: var(--accent); font-family: var(--mono); font-size: .86rem;
-  line-height: 1.7; padding: 14px 14px 14px 52px; resize: none;
+  position: relative;
+  width: calc(100% - 38px); margin-left: 38px;
+  background: transparent; border: none; outline: none;
+  color: transparent; /* text hidden — highlight layer shows it */
+  caret-color: #fff;
+  font-family: var(--mono); font-size: .86rem;
+  line-height: 1.7; padding: 14px 14px 14px 14px; resize: none;
   min-height: 110px; overflow-y: hidden;
   white-space: pre; tab-size: 4;
+  z-index: 2;
 }
 .sql-editor-bolt::placeholder { color: var(--text3); }
 </style>
@@ -573,7 +593,7 @@ body {
 <body>
 
 <div class="loading-screen" id="loadingScreen">
-  <div class="loading-logo">SQL PRATICA</div>
+  <div class="loading-logo">MySQL PRATICA</div>
   <div class="loading-spinner"></div>
   <div class="loading-msg">Iniciando banco de dados...</div>
 </div>
@@ -583,7 +603,7 @@ body {
 <!-- SIDEBAR -->
 <nav class="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-text">SQL PRATICA</div>
+    <div class="logo-text">MySQL PRATICA</div>
     <div class="logo-sub">Analista de Dados Jr.</div>
   </div>
   <div class="sidebar-progress">
@@ -715,7 +735,7 @@ const EXERCISES = [
     level:'estagio',
     levelLabel:'Questao de estagio',
     tables:['produtos'],
-    problem:`Liste os produtos da categoria de <strong>tecnologia/informatica</strong> cujo nome começa com uma vogal específica da parte inicial do alfabeto, <strong>ou</strong> que contenham uma sigla de armazenamento muito comum em produtos de hardware.`,
+    problem:`Liste os produtos da categoria de <strong>tecnologia/informatica</strong> cujo nome começa com a letra <strong>M</strong>, <strong>ou</strong> que contenham a sigla <strong>HD</strong> (referente a um tipo de armazenamento comum em hardware). Mostre nome, categoria e preco.`,
     fn_explain:{
       title:'Operador LIKE',
       content:`<code>LIKE</code> faz busca por padrao de texto. O <code>%</code> substitui qualquer sequencia de caracteres.`,
@@ -728,18 +748,18 @@ const EXERCISES = [
   {
     id:5, mod:1, db:'ecommerce',
     title:'Pedidos de 2023',
-    tags:['DATE','strftime'],
+    tags:['DATE','YEAR()'],
     level:'estagio',
     levelLabel:'Questao de estagio',
     tables:['pedidos'],
     problem:`Liste todos os pedidos de um <strong>ano especifico</strong> (consulte as tabelas para descobrir qual faz sentido filtrar). Mostre o identificador do pedido, a data, o status e o valor total — ordenando do mais recente para o mais antigo.`,
-    hint:'Neste ambiente (SQLite) extraia o ano da data com <code>strftime(\'%Y\', coluna_data)</code>. No MySQL real voce usaria <code>YEAR(coluna)</code>.',
+    hint:'No MySQL, extraia o ano da data com <code>YEAR(coluna_data)</code>. Alternativa universal: <code>BETWEEN \'2023-01-01\' AND \'2023-12-31\'</code>.',
     fn_explain:{
-      title:'Funcoes de Data',
-      content:`No MySQL: <code>YEAR(data_pedido) = 2023</code>\nNo SQLite deste exercicio: <code>strftime('%Y', data_pedido) = '2023'</code>\nAlternativa universal: <code>BETWEEN '2023-01-01' AND '2023-12-31'</code>`,
-      syntax:`WHERE strftime('%Y', data_pedido) = '2023'`
+      title:'Funcoes de Data — MySQL',
+      content:`No MySQL: <code>YEAR(data_pedido) = 2023</code> extrai o ano diretamente.\nAlternativa universal: <code>BETWEEN '2023-01-01' AND '2023-12-31'</code>`,
+      syntax:`WHERE YEAR(data_pedido) = 2023`
     },
-    solution:`<span class="kw">SELECT</span> pedido_id, data_pedido, status, total\n<span class="kw">FROM</span>   <span class="tbl">pedidos</span>\n<span class="kw">WHERE</span>  strftime(<span class="str">'%Y'</span>, data_pedido) <span class="kw">=</span> <span class="str">'2023'</span>\n<span class="kw">ORDER BY</span> data_pedido <span class="kw">DESC</span>;`,
+    solution:`<span class="kw">SELECT</span> pedido_id, data_pedido, status, total\n<span class="kw">FROM</span>   <span class="tbl">pedidos</span>\n<span class="kw">WHERE</span>  <span class="fn">YEAR</span>(data_pedido) <span class="kw">=</span> <span class="str">2023</span>\n<span class="kw">ORDER BY</span> data_pedido <span class="kw">DESC</span>;`,
     validate:(rows)=> rows.length>=5 && rows.every(r=>r.data_pedido&&r.data_pedido.startsWith('2023')),
     validateMsg:'Retorne apenas pedidos com data em 2023.',
   },
@@ -992,18 +1012,18 @@ const EXERCISES = [
   {
     id:22, mod:5, db:'ecommerce',
     title:'Receita acumulada mes a mes',
-    tags:['SUM() OVER','strftime','CTE'],
+    tags:['SUM() OVER','DATE_FORMAT','CTE'],
     level:'nao-estagio',
     levelLabel:'Nao cai em estagio — diferencial para Jr.',
     tables:['pedidos'],
     problem:`Calcule a <strong>receita por mes</strong> e a <strong>receita acumulada</strong> mes a mes dos pedidos entregues em um determinado ano. Mostre: mes, receita do mes e o total acumulado ate aquele mes.`,
-    hint:'Use uma CTE para agregar por mes. Depois, na query principal, aplique <code>SUM(...) OVER (ORDER BY mes)</code> para calcular o acumulado progressivo.',
+    hint:'Use uma CTE para agregar por mes com <code>DATE_FORMAT(data_pedido, \'%Y-%m\')</code>. Depois, na query principal, aplique <code>SUM(...) OVER (ORDER BY mes)</code> para calcular o acumulado progressivo.',
     fn_explain:{
       title:'SUM() OVER — Acumulado (Running Total)',
       content:`<code>SUM(col) OVER (ORDER BY outra)</code> calcula a soma acumulada: cada linha recebe a soma de todas as anteriores + ela mesma.\nSem PARTITION BY, o acumulado e global. Com PARTITION BY, reinicia por grupo.`,
       syntax:`SUM(receita_mes) OVER (\n    ORDER BY mes    -- acumula na ordem cronologica\n) AS receita_acumulada`
     },
-    solution:`<span class="kw">WITH</span> mensal <span class="kw">AS</span> (\n    <span class="kw">SELECT</span>   strftime(<span class="str">'%Y-%m'</span>, data_pedido) <span class="kw">AS</span> mes,\n             <span class="fn">SUM</span>(total) <span class="kw">AS</span> receita_mes\n    <span class="kw">FROM</span>     <span class="tbl">pedidos</span>\n    <span class="kw">WHERE</span>    status <span class="kw">=</span> <span class="str">'Entregue'</span>\n      <span class="kw">AND</span>    strftime(<span class="str">'%Y'</span>, data_pedido) <span class="kw">=</span> <span class="str">'2023'</span>\n    <span class="kw">GROUP BY</span> mes\n)\n<span class="kw">SELECT</span>  mes, receita_mes,\n        <span class="fn">SUM</span>(receita_mes) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> mes) <span class="kw">AS</span> receita_acumulada\n<span class="kw">FROM</span>    mensal\n<span class="kw">ORDER BY</span> mes;`,
+    solution:`<span class="kw">WITH</span> mensal <span class="kw">AS</span> (\n    <span class="kw">SELECT</span>   <span class="fn">DATE_FORMAT</span>(data_pedido, <span class="str">'%Y-%m'</span>) <span class="kw">AS</span> mes,\n             <span class="fn">SUM</span>(total) <span class="kw">AS</span> receita_mes\n    <span class="kw">FROM</span>     <span class="tbl">pedidos</span>\n    <span class="kw">WHERE</span>    status <span class="kw">=</span> <span class="str">'Entregue'</span>\n      <span class="kw">AND</span>    <span class="fn">YEAR</span>(data_pedido) <span class="kw">=</span> <span class="str">2023</span>\n    <span class="kw">GROUP BY</span> mes\n)\n<span class="kw">SELECT</span>  mes, receita_mes,\n        <span class="fn">SUM</span>(receita_mes) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> mes) <span class="kw">AS</span> receita_acumulada\n<span class="kw">FROM</span>    mensal\n<span class="kw">ORDER BY</span> mes;`,
     validate:(rows)=> rows.length>=3 && rows[0].hasOwnProperty('receita_acumulada'),
     validateMsg:'Retorne mes, receita_mes e receita_acumulada com SUM() OVER.',
   },
@@ -1382,15 +1402,12 @@ function renderExercise(idx) {
 
     <div class="editor-wrap">
       <div class="editor-topbar">
-        <div class="editor-dots">
-          <div class="editor-dot r"></div>
-          <div class="editor-dot y"></div>
-          <div class="editor-dot g"></div>
-        </div>
+        <div style="font-family:var(--mono);font-size:.75rem;font-weight:700;color:var(--accent);letter-spacing:1px">MySQL editor</div>
         <div class="editor-label">editor sql — ${isRh ? 'db_rh' : 'db_ecommerce'}</div>
       </div>
       <div class="editor-container" id="editorContainer">
         <div class="editor-lines" id="editorLines"><div class="editor-line-num">1</div></div>
+        <div class="sql-highlight" id="sqlHighlight" aria-hidden="true"></div>
         <textarea class="sql-editor-bolt" id="sqlEditor" placeholder="-- Digite sua query aqui..." spellcheck="false" rows="6"></textarea>
       </div>
       <div class="editor-actions">
@@ -1420,6 +1437,7 @@ function renderExercise(idx) {
   const editor = document.getElementById('sqlEditor');
   if (editorStates[idx]) editor.value = editorStates[idx];
   initSqlEditor(editor);
+  updateHighlight(editor);
   editor.addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runQuery(); }
   });
@@ -1499,7 +1517,7 @@ function tryMetaCommand(sql, currentDb) {
 
   // ── SHOW STATUS / SHOW VARIABLES (stub) ──────────────
   if (/^SHOW\s+(STATUS|VARIABLES|ENGINES|PROCESSLIST)\s*;?$/i.test(norm)) {
-    return { cols:['Info'], rows:[['Comando suportado apenas no MySQL real. Neste ambiente SQLite, use SHOW TABLES ou DESCRIBE tabela.']], meta:null };
+    return { cols:['Info'], rows:[['Comando suportado apenas no MySQL real. Neste ambiente, use SHOW TABLES ou DESCRIBE tabela.']], meta:null };
   }
 
   return null; // not a meta command
@@ -1533,6 +1551,19 @@ function runQuery() {
 
     let isCorrect = false;
     try { isCorrect = ex.validate(rows); } catch {}
+
+    // Also accept if user result matches EXPECTED_ANSWERS structurally
+    if (!isCorrect) {
+      try {
+        const exp = EXPECTED_ANSWERS[ex.id];
+        if (exp && rows.length === exp.rows.length && rows.length > 0) {
+          // Compare values row-by-row (order-insensitive for values, convert to strings)
+          const userVals = rows.map(r => Object.values(r).map(v => String(v === null ? 'NULL' : v)).join('|')).sort();
+          const expVals  = exp.rows.map(r => r.map(v => String(v === null ? 'NULL' : v)).join('|')).sort();
+          isCorrect = userVals.every((v, i) => v === expVals[i]);
+        }
+      } catch {}
+    }
 
     if (isCorrect) {
       if (!completed.has(currentEx)) {
@@ -1596,6 +1627,7 @@ function clearEditor() {
 function toggleSolution(btn) {
   const b = document.getElementById('solutionBlock');
   const open = b.classList.toggle('open');
+  btn.classList.toggle('active', open);
   btn.textContent = open ? 'Ocultar solucao' : 'Ver solucao';
 }
 
@@ -1633,6 +1665,7 @@ const EXPECTED_ANSWERS = {
 function toggleExpected(btn) {
   const b = document.getElementById('expectedBlock');
   const open = b.classList.toggle('open');
+  btn.classList.toggle('active', open);
   btn.textContent = open ? 'Ocultar Resposta' : 'Resposta Esperada';
   if (open) {
     const ex = EXERCISES[currentEx];
@@ -1692,7 +1725,91 @@ function showToast(msg) {
 // ════════════════════════════════════════════════════════
 const SQL_KEYWORDS = ['SELECT','FROM','WHERE','ORDER BY','GROUP BY','HAVING','JOIN','LEFT JOIN','RIGHT JOIN','INNER JOIN','ON','AS','AND','OR','NOT','IN','IS NULL','IS NOT NULL','BETWEEN','LIKE','LIMIT','OFFSET','DISTINCT','COUNT','SUM','AVG','MIN','MAX','ROUND','COALESCE','CASE','WHEN','THEN','ELSE','END','WITH','UNION','INSERT','UPDATE','DELETE','CREATE','DROP','ALTER','PARTITION BY','OVER','RANK','ROW_NUMBER','DENSE_RANK','LAG','LEAD','NULL','ASC','DESC','SHOW','SHOW TABLES','SHOW DATABASES','DESCRIBE','DESC'];
 
-function updateLineNumbers(editor) {
+// ════════════════════════════════════════════════════════
+// SQL SYNTAX HIGHLIGHT OVERLAY
+// ════════════════════════════════════════════════════════
+const HL_KEYWORDS = [
+  'SELECT','FROM','WHERE','ORDER BY','GROUP BY','HAVING',
+  'LEFT JOIN','RIGHT JOIN','INNER JOIN','FULL JOIN','CROSS JOIN','JOIN',
+  'ON','AS','AND','OR','NOT','IN','IS NOT NULL','IS NULL',
+  'BETWEEN','LIKE','LIMIT','OFFSET','DISTINCT',
+  'COUNT','SUM','AVG','MIN','MAX','ROUND','COALESCE',
+  'DATE_FORMAT','YEAR','MONTH','DAY',
+  'CASE','WHEN','THEN','ELSE','END',
+  'WITH','UNION','ALL',
+  'INSERT','UPDATE','DELETE','CREATE','DROP','ALTER',
+  'PARTITION BY','OVER','RANK','ROW_NUMBER','DENSE_RANK','LAG','LEAD',
+  'NULL','ASC','DESC',
+  'SHOW DATABASES','SHOW TABLES','SHOW COLUMNS','SHOW CREATE TABLE',
+  'SHOW','DESCRIBE','DESC'
+].sort((a,b)=>b.length-a.length); // longest first so ORDER BY beats BY etc.
+
+function sqlHighlight(code) {
+  // Escape HTML first
+  let s = code
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+
+  // We'll build a token-based replacement.
+  // Strategy: walk through and replace token by token using markers
+  // to avoid double-replacement.
+
+  // 1) Strings (single-quoted) — replace with placeholder
+  const strings = [];
+  s = s.replace(/'([^']*)'/g, (_,inner)=>{
+    strings.push(`<span style="color:#F6AD55">'${inner}'</span>`);
+    return `\x00S${strings.length-1}\x00`;
+  });
+
+  // 2) Comments (-- ...)
+  const comments = [];
+  s = s.replace(/--(.*)/g, (_,rest)=>{
+    comments.push(`<span style="color:#4A5568;font-style:italic">--${rest}</span>`);
+    return `\x00C${comments.length-1}\x00`;
+  });
+
+  // 3) Keywords (case-insensitive, whole-word)
+  for (const kw of HL_KEYWORDS) {
+    const re = new RegExp('(?<![\\w])' + kw.replace(/ /g,'\\s+') + '(?![\\w])', 'gi');
+    s = s.replace(re, match => `<span style="color:#63B3ED;font-weight:600">${match}</span>`);
+  }
+
+  // 4) Functions that weren't caught (word followed by '(')
+  s = s.replace(/\b([A-Za-z_][A-Za-z0-9_]*)(?=\s*\()/g, (match, fn) => {
+    // Don't double-wrap already wrapped
+    if (match.includes('<span')) return match;
+    return `<span style="color:#68D391">${fn}</span>`;
+  });
+
+  // 5) Numbers
+  s = s.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span style="color:#F6AD55">$1</span>');
+
+  // 6) Restore strings and comments
+  s = s.replace(/\x00S(\d+)\x00/g, (_,i)=>strings[i]);
+  s = s.replace(/\x00C(\d+)\x00/g, (_,i)=>comments[i]);
+
+  // 7) Everything uncolored = white (identifiers, column names, aliases, table names)
+  // Wrap plain text nodes that have no span
+  s = s.replace(/(?<=>|^)([^<]+?)(?=<|$)/g, (match) => {
+    // Only wrap if contains visible text
+    if (/\S/.test(match)) return `<span style="color:#E2E8F0">${match}</span>`;
+    return match;
+  });
+
+  return s;
+}
+
+function updateHighlight(editor) {
+  const hl = document.getElementById('sqlHighlight');
+  if (!hl) return;
+  const val = editor.value;
+  if (!val) { hl.innerHTML = ''; return; }
+  hl.innerHTML = sqlHighlight(val);
+  // Sync scroll
+  hl.scrollTop = editor.scrollTop;
+  hl.scrollLeft = editor.scrollLeft;
+}
   const lines = editor.value.split('\n');
   const container = document.getElementById('editorLines');
   if (!container) return;
@@ -1739,12 +1856,15 @@ function handleEnterAutoIndent(e) {
 function initSqlEditor(editor) {
   updateLineNumbers(editor);
   autoResizeEditor(editor);
-  editor.addEventListener('input', () => { updateLineNumbers(editor); autoResizeEditor(editor); });
+  updateHighlight(editor);
+  editor.addEventListener('input', () => { updateLineNumbers(editor); autoResizeEditor(editor); updateHighlight(editor); });
   editor.addEventListener('keydown', handleTab);
   editor.addEventListener('keydown', handleEnterAutoIndent);
   editor.addEventListener('scroll', () => {
     const lines = document.getElementById('editorLines');
     if (lines) lines.scrollTop = editor.scrollTop;
+    const hl = document.getElementById('sqlHighlight');
+    if (hl) { hl.scrollTop = editor.scrollTop; hl.scrollLeft = editor.scrollLeft; }
   });
 }
 
