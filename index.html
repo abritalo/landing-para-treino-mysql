@@ -1227,6 +1227,7 @@ const TABLE_PREVIEWS = {
 let db_ecommerce = null, db_rh = null;
 let currentEx = 0;
 const STORAGE_KEY = 'sqlpratica_progress_v1';
+const QUERIES_KEY = 'sqlpratica_queries_v1';
 
 function loadCompleted() {
   try {
@@ -1238,8 +1239,18 @@ function saveCompleted() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...completed])); } catch {}
 }
 
+function loadSavedQueries() {
+  try {
+    const raw = localStorage.getItem(QUERIES_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+function saveQueries() {
+  try { localStorage.setItem(QUERIES_KEY, JSON.stringify(editorStates)); } catch {}
+}
+
 const completed = loadCompleted();
-const editorStates = {};
+const editorStates = loadSavedQueries();
 
 // ════════════════════════════════════════════════════════
 // DB INIT
@@ -1601,10 +1612,11 @@ function tryMetaCommand(sql, currentDb) {
 // ════════════════════════════════════════════════════════
 function runQuery() {
   const ex = EXERCISES[currentEx];
-  const sql = document.getElementById('sqlEditor').value.trim();
-  editorStates[currentEx] = sql;
+const sql = document.getElementById('sqlEditor').value.trim();
+editorStates[currentEx] = sql;
+saveQueries();
 
-  if (!sql) { showResult('error','Escreva uma query antes de executar.', null, null); return; }
+if (!sql) { showResult('error','Escreva uma query antes de executar.', null, null); return; }
 
   // ── Check for MySQL meta-commands first ───────────────
   const meta = tryMetaCommand(sql, ex.db);
@@ -1695,6 +1707,10 @@ function clearEditor() {
   document.getElementById('sqlEditor').value = '';
   document.getElementById('resultArea').innerHTML = '';
   editorStates[currentEx] = '';
+  saveQueries();
+  const editor = document.getElementById('sqlEditor');
+  updateHighlight(editor);
+  updateLineNumbers(editor);
 }
 
 function toggleSolution(btn) {
@@ -1790,7 +1806,18 @@ function toggleExpected(btn) {
 // ════════════════════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════════════════════
-function goTo(idx) { currentEx = idx; if (tablesPageVisible) hideTablesPage(); buildSidebar(); renderExercise(idx); }
+function goTo(idx) {
+  // Save current query before switching
+  const editor = document.getElementById('sqlEditor');
+  if (editor && editor.value) {
+    editorStates[currentEx] = editor.value;
+    saveQueries();
+  }
+  currentEx = idx;
+  if (tablesPageVisible) hideTablesPage();
+  buildSidebar();
+  renderExercise(idx);
+}
 function navigate(dir) { const n = currentEx + dir; if (n>=0 && n<EXERCISES.length) goTo(n); }
 
 // ════════════════════════════════════════════════════════
