@@ -1391,7 +1391,7 @@ function renderExercise(idx) {
       </div>
       <div class="editor-container" id="editorContainer">
         <div class="editor-lines" id="editorLines"><div class="editor-line-num">1</div></div>
-        <textarea class="sql-editor-bolt" id="sqlEditor" placeholder="-- Digite sua query aqui...&#10;-- Comandos suportados: SHOW TABLES, SHOW DATABASES, DESCRIBE tabela, SHOW COLUMNS FROM tabela, SHOW CREATE TABLE tabela" spellcheck="false" rows="6"></textarea>
+        <textarea class="sql-editor-bolt" id="sqlEditor" placeholder="-- Digite sua query aqui..." spellcheck="false" rows="6"></textarea>
       </div>
       <div class="editor-actions">
         <button class="btn-run" onclick="runQuery()">&#9654; Executar</button>
@@ -1405,6 +1405,11 @@ function renderExercise(idx) {
 
     <div style="margin-top:4px">
       <button class="btn-solution" onclick="toggleSolution(this)">Ver solucao</button>
+      <button class="btn-solution" onclick="toggleExpected(this)" style="margin-left:8px">Resposta Esperada</button>
+      <div class="solution-block" id="expectedBlock" style="border-color:rgba(79,255,176,.25)">
+        <div class="solution-bar" style="color:var(--accent)">// Primeiras 5 linhas da resposta esperada</div>
+        <div id="expectedTableWrap" style="overflow-x:auto"></div>
+      </div>
       <div class="solution-block" id="solutionBlock">
         <div class="solution-bar">// Solucao — tente resolver antes!</div>
         <div class="solution-code">${ex.solution}</div>
@@ -1592,6 +1597,53 @@ function toggleSolution(btn) {
   const b = document.getElementById('solutionBlock');
   const open = b.classList.toggle('open');
   btn.textContent = open ? 'Ocultar solucao' : 'Ver solucao';
+}
+
+// ════════════════════════════════════════════════════════
+// EXPECTED ANSWERS
+// ════════════════════════════════════════════════════════
+const EXPECTED_ANSWERS = {
+  1: { cols: ['Nome','Email','Cidade'], rows: [['Ana Souza','ana@email.com','Sao Paulo'],['Bruno Lima','bruno@email.com','Rio de Janeiro'],['Diego Costa','diego@email.com','Curitiba'],['Elisa Ramos','elisa@email.com','Salvador'],['Felipe Nunes','felipe@email.com','Fortaleza']] },
+  2: { cols: ['Produto','Categoria','Preço'], rows: [['Roteador TP-Link','Redes',220],['Webcam Full HD','Informatica',250],['Headset JBL','Audio',320],['Teclado Mecanico','Informatica',380],['HD Externo 1TB','Armazenamento',420]] },
+  3: { cols: ['Pedido','Cliente','Data','Status','Total'], rows: [[3,3,'2023-02-20','Cancelado',900],[6,5,'2023-05-08','Processando',320],[12,1,'2023-11-28','Processando',700],[15,8,'2024-02-09','Cancelado',1200]] },
+  4: { cols: ['Produto','Categoria','Preço'], rows: [['Mouse Logitech','Informatica',150],['Monitor 24pol','Informatica',900],['Webcam Full HD','Informatica',250]] },
+  5: { cols: ['Pedido','Data','Status','Total'], rows: [[13,'2023-12-05','Entregue',3200],[12,'2023-11-28','Processando',700],[11,'2023-10-15','Entregue',420],[10,'2023-09-22','Entregue',220],[9,'2023-08-03','Enviado',2800]] },
+  6: { cols: ['Status','Qtd Pedidos'], rows: [['Entregue',10],['Processando',2],['Cancelado',2],['Enviado',1]] },
+  7: { cols: ['Método Pagamento','Receita Total'], rows: [['Cartao de Credito',12570],['Pix',1490],['Cartao de Debito',380],['Boleto',220]] },
+  8: { cols: ['Categoria','Preço Médio'], rows: [['Tablets',4500],['Celulares',2800],['Moveis',1200],['Informatica',930]] },
+  9: { cols: ['Departamento','Qtd Funcionários','Salário Médio'], rows: [['Financeiro',2,10400],['Comercial',2,9250],['Tecnologia',7,7785.71],['Marketing',1,6800],['Recursos Humanos',1,5500]] },
+  10: { cols: ['Produto ID','Total Vendido'], rows: [[2,4],[12,2],[8,2],[7,2],[5,2]] },
+  11: { cols: ['Pedido','Cliente','Data','Status','Total'], rows: [[14,'Elisa Ramos','2024-01-17','Entregue',250],[13,'Diego Costa','2023-12-05','Entregue',3200],[11,'Bruno Lima','2023-10-15','Entregue',420],[10,'Joao Batista','2023-09-22','Entregue',220],[8,'Hugo Alves','2023-07-19','Entregue',670]] },
+  12: { cols: ['Pedido','Data','Produto','Qtd','Preço Unit.'], rows: [[1,'2023-01-10','Mouse Logitech',1,150],[1,'2023-01-10','Notebook Dell',1,3200],[2,'2023-02-14','Mouse Logitech',1,150],[3,'2023-02-20','Monitor 24pol',1,900],[4,'2023-03-05','Teclado Mecanico',1,380]] },
+  13: { cols: ['Nome','Email'], rows: [['Gabriela Pires','gabi@email.com']] },
+  14: { cols: ['Funcionário','Cargo','Gestor'], rows: [['Rafael Moreira','Consultor de Vendas','Camila Duarte'],['Carlos Ribeiro','Estagiario de TI','Lucas Ferreira'],['Juliana Soares','Estagiaria de Dados','Mariana Santos'],['Patricia Gomes','Analista de Dados Jr','Mariana Santos'],['Lucas Ferreira','Desenvolvedor Pleno','Ricardo Alves']] },
+  15: { cols: ['Nome','Estado','Total Gasto'], rows: [['Diego Costa','PR',4720],['Felipe Nunes','CE',4500],['Ana Souza','SP',3730]] },
+  16: { cols: ['Produto','Categoria','Preço'], rows: [['Tablet iPad','Tablets',4500],['Notebook Dell','Informatica',3200],['Smartphone Samsung','Celulares',2800]] },
+  17: { cols: ['Nome','Email'], rows: [['Ana Souza','ana@email.com'],['Diego Costa','diego@email.com']] },
+  18: { cols: ['Nome','Cargo','Salário'], rows: [['Ricardo Alves','Diretor de TI',18000],['Eduardo Costa','Controller',13000],['Camila Duarte','Gerente Comercial',12000],['Thiago Rocha','Cientista de Dados',11000],['Mariana Santos','Analista de Dados Sr',9500]] },
+  19: { cols: ['Produto','Receita'], rows: [['Notebook Dell',6400],['Tablet iPad',4500],['Smartphone Samsung',2800]] },
+  20: { cols: ['Nome','Cargo','Média Nota'], rows: [['Thiago Rocha','Cientista de Dados',10],['Mariana Santos','Analista de Dados Sr',9.5],['Juliana Soares','Estagiaria de Dados',9],['Patricia Gomes','Analista de Dados Jr',8.5]] },
+  21: { cols: ['Nome','Departamento','Salário','Rank'], rows: [['Camila Duarte','Comercial',12000,1],['Rafael Moreira','Comercial',6500,2],['Eduardo Costa','Financeiro',13000,1],['Fernanda Lima','Financeiro',7800,2],['Gustavo Melo','Marketing',6800,1]] },
+  22: { cols: ['Mês','Receita Mês','Receita Acumulada'], rows: [['2023-01',3350,3350],['2023-02',150,3500],['2023-03',380,3880],['2023-04',1520,5400],['2023-06',4500,9900]] },
+  23: { cols: ['Nome','Nota 2022','Nota 2023','Variação'], rows: [['Rafael Moreira',6,8,2],['Mariana Santos',9,10,1],['Lucas Ferreira',7,8,1],['Patricia Gomes',8,9,1],['Thiago Rocha',10,10,0]] },
+  24: { cols: ['Produto','Receita','% Participação'], rows: [['Notebook Dell',6400,30.8],['Tablet iPad',4500,21.66],['Smartphone Samsung',2800,13.47],['Cadeira Gamer',2400,11.55],['Monitor 24pol',900,4.33]] },
+  25: { cols: ['Nome','Estado','Qtd Pedidos','Ticket Médio','Gasto Total','Classificação'], rows: [['Hugo Alves','RS',1,670,670,'Regular'],['Bruno Lima','RJ',2,285,570,'Regular'],['Elisa Ramos','BA',1,250,250,'Regular'],['Joao Batista','GO',1,220,220,'Regular'],['Diego Costa','PR',2,2360,4720,'VIP']] },
+};
+
+function toggleExpected(btn) {
+  const b = document.getElementById('expectedBlock');
+  const open = b.classList.toggle('open');
+  btn.textContent = open ? 'Ocultar Resposta' : 'Resposta Esperada';
+  if (open) {
+    const ex = EXERCISES[currentEx];
+    const data = EXPECTED_ANSWERS[ex.id];
+    if (!data) return;
+    const wrap = document.getElementById('expectedTableWrap');
+    const heads = data.cols.map(c=>`<th>${c}</th>`).join('');
+    const body = data.rows.map(r=>`<tr>${r.map(v=>`<td>${v === null ? '<span class="null-val">NULL</span>' : v}</td>`).join('')}</tr>`).join('');
+    const note = data.rows.length < 5 ? `<div style="font-size:.68rem;color:var(--text3);font-family:var(--mono);text-align:right;padding:4px 8px">${data.rows.length} linha${data.rows.length!==1?'s':''} no total</div>` : `<div style="font-size:.68rem;color:var(--text3);font-family:var(--mono);text-align:right;padding:4px 8px">mostrando 5 primeiras linhas</div>`;
+    wrap.innerHTML = `<table class="result-table"><thead><tr>${heads}</tr></thead><tbody>${body}</tbody></table>${note}`;
+  }
 }
 
 // ════════════════════════════════════════════════════════
