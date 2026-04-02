@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MySQL PRATICA — Exercícios MySQL</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
 <style>
 :root {
@@ -24,7 +25,7 @@
   --green:    #4FFFB0;
   --red:      #FF6B6B;
   --purple:   #C084FC;
-  --mono:     'JetBrains Mono', monospace;
+  --mono:     'Fira Code', 'JetBrains Mono', monospace;
   --sans:     'DM Sans', sans-serif;
   --display:  'Syne', sans-serif;
   --radius:   10px;
@@ -331,13 +332,59 @@ body {
 }
 .btn-run:hover { background: #6FFFBF; transform: translateY(-1px); }
 .btn-run:active { transform: translateY(0); }
+
+/* ── CLEAR BUTTON ── */
 .btn-clear {
-  background: transparent; border: 1px solid var(--border); color: var(--text3);
-  padding: 7px 13px; border-radius: 7px; font-family: var(--sans); font-size: .76rem;
-  cursor: pointer; transition: all .15s;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #F87171;
+  padding: 7px 16px;
+  border-radius: 7px;
+  font-family: var(--sans);
+  font-size: .78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
 }
-.btn-clear:hover { border-color: var(--border2); color: var(--text2); }
+.btn-clear:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #EF4444;
+  color: #FCA5A5;
+  transform: translateY(-1px);
+}
+.btn-clear:active { transform: translateY(0); }
+
 .shortcut-hint { margin-left: auto; font-size: .68rem; color: var(--text3); font-family: var(--mono); }
+
+/* ── COPY BUTTON ── */
+.btn-copy {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  color: #22D3EE;
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-family: var(--sans);
+  font-size: .78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-copy:hover {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: #00D4FF;
+  color: #67E8F9;
+  transform: translateY(-1px);
+}
+.btn-copy:active { transform: translateY(0); }
+.btn-copy.copied {
+  background: rgba(79, 255, 176, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn-copy svg { width: 15px; height: 15px; }
 
 /* ── RESULTS ── */
 .result-area { margin-bottom: 18px; }
@@ -391,6 +438,8 @@ body {
 .str { color: #F6AD55; }
 .cmt { color: #4A5568; font-style: italic; }
 .tbl { color: #FC8181; }
+.hl-kw { color: #63B3ED; font-weight: 600; }
+.hl-fn { color: #68D391; }
 
 /* ── MODULE COLORS ── */
 .mod-1 .ex-module-badge, .ex-module-badge.mod-1 { background: rgba(79,255,176,.1);  color: #4FFFB0; border: 1px solid rgba(79,255,176,.22); }
@@ -543,9 +592,12 @@ body {
   position: relative;
   background: var(--surface);
   font-family: var(--mono);
-  font-size: .86rem;
+  font-size: .9rem;
   line-height: 1.7;
-  min-height: 110px;
+  min-height: 120px;
+  font-feature-settings: "liga" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .editor-lines {
   position: absolute; top: 0; left: 0;
@@ -567,27 +619,44 @@ body {
   position: absolute;
   top: 0; left: 38px; right: 0; bottom: 0;
   padding: 14px 14px 14px 14px;
-  font-family: var(--mono); font-size: .86rem;
+  font-family: var(--mono);
+  font-size: .9rem;
   line-height: 1.7;
-  white-space: pre-wrap; word-break: break-all;
+  white-space: pre-wrap;
+  word-break: break-all;
   pointer-events: none;
-  color: transparent; /* only the spans are visible */
+  color: #E2E8F0;
   z-index: 1;
   overflow: hidden;
+  font-feature-settings: "liga" 1, "calt" 1;
+  letter-spacing: 0.01em;
 }
 .sql-editor-bolt {
   position: relative;
-  width: calc(100% - 38px); margin-left: 38px;
-  background: transparent; border: none; outline: none;
-  color: transparent; /* text hidden — highlight layer shows it */
-  caret-color: #fff;
-  font-family: var(--mono); font-size: .86rem;
-  line-height: 1.7; padding: 14px 14px 14px 14px; resize: none;
-  min-height: 110px; overflow-y: hidden;
-  white-space: pre; tab-size: 4;
+  width: calc(100% - 38px);
+  margin-left: 38px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: transparent;
+  caret-color: var(--accent);
+  font-family: var(--mono);
+  font-size: .9rem;
+  line-height: 1.7;
+  padding: 14px 14px 14px 14px;
+  resize: none;
+  min-height: 120px;
+  overflow-y: hidden;
+  white-space: pre;
+  tab-size: 4;
   z-index: 2;
+  font-feature-settings: "liga" 1, "calt" 1;
+  letter-spacing: 0.01em;
 }
-.sql-editor-bolt::placeholder { color: var(--text3); }
+.sql-editor-bolt::placeholder {
+  color: var(--text3);
+  font-style: italic;
+}
 </style>
 </head>
 <body>
@@ -1321,7 +1390,7 @@ function renderTablePreviews(tableNames) {
 
 // ════════════════════════════════════════════════════════
 // LEVEL BADGE
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════���════
 function renderLevelBadge(ex) {
   const cls = ex.level === 'estagio' ? 'level-estagio' : ex.level === 'jr' ? 'level-jr' : 'level-nao-estagio';
   return `<span class="level-badge ${cls}">${ex.levelLabel}</span>`;
@@ -1413,6 +1482,7 @@ function renderExercise(idx) {
       <div class="editor-actions">
         <button class="btn-run" onclick="runQuery()">&#9654; Executar</button>
         <button class="btn-clear" onclick="clearEditor()">Limpar</button>
+        <button class="btn-copy" id="btnCopyEditor" onclick="copyEditorCode()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar</button>
         <span class="shortcut-hint">Ctrl+Enter</span>
         <span style="margin-left:auto">${saveHtml}</span>
       </div>
@@ -1428,7 +1498,10 @@ function renderExercise(idx) {
         <div id="expectedTableWrap" style="overflow-x:auto"></div>
       </div>
       <div class="solution-block" id="solutionBlock">
-        <div class="solution-bar">// Solucao — tente resolver antes!</div>
+        <div class="solution-bar" style="display:flex;justify-content:space-between;align-items:center">
+          <span>// Solucao — tente resolver antes!</span>
+          <button class="btn-copy" id="btnCopySolution" onclick="copySolutionCode()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar</button>
+        </div>
         <div class="solution-code">${ex.solution}</div>
       </div>
     </div>
@@ -1447,7 +1520,7 @@ function renderExercise(idx) {
 
 // ════════════════════════════════════════════════════════
 // MYSQL META-COMMAND EMULATION
-// ════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════��═════
 const EC_TABLES = ['clientes','produtos','pedidos','itens_pedido'];
 const RH_TABLES = ['departamentos','funcionarios','avaliacoes'];
 
@@ -1515,7 +1588,7 @@ function tryMetaCommand(sql, currentDb) {
     return { cols:['Table','Create Table'], rows:[[tbl, ddl]], meta:null };
   }
 
-  // ── SHOW STATUS / SHOW VARIABLES (stub) ──────────────
+  // ── SHOW STATUS / SHOW VARIABLES (stub) ──────────���───
   if (/^SHOW\s+(STATUS|VARIABLES|ENGINES|PROCESSLIST)\s*;?$/i.test(norm)) {
     return { cols:['Info'], rows:[['Comando suportado apenas no MySQL real. Neste ambiente, use SHOW TABLES ou DESCRIBE tabela.']], meta:null };
   }
@@ -1629,6 +1702,41 @@ function toggleSolution(btn) {
   const open = b.classList.toggle('open');
   btn.classList.toggle('active', open);
   btn.textContent = open ? 'Ocultar solucao' : 'Ver solucao';
+}
+
+// ════════════════════════════════════════════════════════
+// COPY CODE FUNCTIONS
+// ════════════════════════════════════════════════════════
+function copyEditorCode() {
+  const editor = document.getElementById('sqlEditor');
+  if (!editor || !editor.value.trim()) {
+    showToast('Nada para copiar no editor.');
+    return;
+  }
+  navigator.clipboard.writeText(editor.value).then(() => {
+    const btn = document.getElementById('btnCopyEditor');
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"></polyline></svg> Copiado!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar';
+    }, 2000);
+  }).catch(() => showToast('Erro ao copiar.'));
+}
+
+function copySolutionCode() {
+  const ex = EXERCISES[currentEx];
+  // Remove HTML tags from solution
+  const plainCode = ex.solution.replace(/<[^>]+>/g, '');
+  navigator.clipboard.writeText(plainCode).then(() => {
+    const btn = document.getElementById('btnCopySolution');
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"></polyline></svg> Copiado!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar';
+    }, 2000);
+  }).catch(() => showToast('Erro ao copiar.'));
 }
 
 // ════════════════════════════════════════════════════════
@@ -1769,33 +1877,32 @@ function sqlHighlight(code) {
     return `\x00C${comments.length-1}\x00`;
   });
 
-  // 3) Keywords (case-insensitive, whole-word)
+  // 3) Numbers (do this FIRST before adding HTML tags that contain numbers)
+  const numbers = [];
+  s = s.replace(/\b(\d+(?:\.\d+)?)\b/g, (match) => {
+    numbers.push(`<span style="color:#F6AD55">${match}</span>`);
+    return `\x00N${numbers.length-1}\x00`;
+  });
+
+  // 4) Keywords (case-insensitive, whole-word)
   for (const kw of HL_KEYWORDS) {
     const re = new RegExp('(?<![\\w])' + kw.replace(/ /g,'\\s+') + '(?![\\w])', 'gi');
-    s = s.replace(re, match => `<span style="color:#63B3ED;font-weight:600">${match}</span>`);
+    s = s.replace(re, match => `<span class="hl-kw">${match}</span>`);
   }
 
-  // 4) Functions that weren't caught (word followed by '(')
+  // 5) Functions that weren't caught (word followed by '(')
   s = s.replace(/\b([A-Za-z_][A-Za-z0-9_]*)(?=\s*\()/g, (match, fn) => {
     // Don't double-wrap already wrapped
-    if (match.includes('<span')) return match;
-    return `<span style="color:#68D391">${fn}</span>`;
+    if (match.includes('<span') || match.includes('\x00')) return match;
+    return `<span class="hl-fn">${fn}</span>`;
   });
 
-  // 5) Numbers
-  s = s.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span style="color:#F6AD55">$1</span>');
+  // 6) Restore numbers
+  s = s.replace(/\x00N(\d+)\x00/g, (_,i)=>numbers[i]);
 
-  // 6) Restore strings and comments
+  // 7) Restore strings and comments
   s = s.replace(/\x00S(\d+)\x00/g, (_,i)=>strings[i]);
   s = s.replace(/\x00C(\d+)\x00/g, (_,i)=>comments[i]);
-
-  // 7) Everything uncolored = white (identifiers, column names, aliases, table names)
-  // Wrap plain text nodes that have no span
-  s = s.replace(/(?<=>|^)([^<]+?)(?=<|$)/g, (match) => {
-    // Only wrap if contains visible text
-    if (/\S/.test(match)) return `<span style="color:#E2E8F0">${match}</span>`;
-    return match;
-  });
 
   return s;
 }
@@ -1810,6 +1917,8 @@ function updateHighlight(editor) {
   hl.scrollTop = editor.scrollTop;
   hl.scrollLeft = editor.scrollLeft;
 }
+
+function updateLineNumbers(editor) {
   const lines = editor.value.split('\n');
   const container = document.getElementById('editorLines');
   if (!container) return;
@@ -1870,7 +1979,7 @@ function initSqlEditor(editor) {
 
 // ════════════════════════════════════════════════════════
 // SIDEBAR TABLES TOGGLE
-// ════════════════════════════════════════════════════════
+// ═════���══���═══════════════════════════════════════════════
 function toggleTablesSection() {
   const body = document.getElementById('sidebarTablesBody');
   const toggle = document.getElementById('tablesSectionToggle');
