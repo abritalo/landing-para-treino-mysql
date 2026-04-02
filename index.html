@@ -103,7 +103,9 @@ body {
 .nav-module-title {
   font-size: .62rem; font-weight: 700; text-transform: uppercase;
   letter-spacing: 1.5px; color: var(--text3); padding: 14px 18px 5px;
+  transition: color .15s;
 }
+.nav-module-title:hover { color: var(--accent); }
 .nav-item {
   display: flex; align-items: center; gap: 9px;
   padding: 7px 18px; cursor: pointer;
@@ -558,13 +560,28 @@ body.theme-tables-ec { --theme-accent: #4FFFB0; --theme-accent2: #3DEEA0; --them
 body.theme-tables-rh { --theme-accent: #C084FC; --theme-accent2: #A855F7; --theme-bg: #12101A; }
 body.theme-functions { --theme-accent: #00D4FF; --theme-accent2: #06B6D4; --theme-bg: #0E1419; }
 
+/* Temas globais sobrescrevem module themes completamente */
+body.gtheme-light[class*="theme-mod-"],
+body.gtheme-light[class*="theme-tables-"],
+body.gtheme-light.theme-functions {
+  --theme-accent: #0D9488; --theme-accent2: #0891B2; --theme-bg: #F0F4F8;
+}
+body.gtheme-purple[class*="theme-mod-"],
+body.gtheme-purple[class*="theme-tables-"],
+body.gtheme-purple.theme-functions {
+  --theme-accent: #A78BFA; --theme-accent2: #F472B6; --theme-bg: #050508;
+}
+body.gtheme-amber[class*="theme-mod-"],
+body.gtheme-amber[class*="theme-tables-"],
+body.gtheme-amber.theme-functions {
+  --theme-accent: #FCD34D; --theme-accent2: #FB923C; --theme-bg: #0A0800;
+}
+
 body[class*="theme-mod-"], body[class*="theme-tables-"], body.theme-functions {
   --accent: var(--theme-accent);
   --accent2: var(--theme-accent2);
   background: var(--theme-bg);
 }
-/* Logo e sidebar sempre verde */
-/* Progress bar sempre verde */
 body[class*="theme-mod-"] .loading-logo,
 body[class*="theme-tables-"] .loading-logo,
 body.theme-functions .loading-logo {
@@ -685,7 +702,10 @@ body.theme-functions .loading-spinner {
 }
 .module-info-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 18px 20px; margin-bottom: 16px;
+  padding: 18px 20px; margin-bottom: 16px; transition: border-color .15s, background .15s;
+}
+.module-info-card:hover {
+  border-color: var(--accent); background: var(--surface2);
 }
 .module-info-header {
   display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
@@ -721,6 +741,63 @@ body.theme-functions .loading-spinner {
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── GLOBAL THEMES ── */
+body.gtheme-light {
+  --bg:#F0F4F8;--surface:#FFFFFF;--surface2:#E8EFF5;--surface3:#D8E4ED;
+  --border:#C5D4E0;--border2:#A8BDCC;
+  --accent:#0D9488;--accent2:#0891B2;--warn:#0891B2;
+  --text:#0F172A;--text2:#334155;--text3:#64748B;
+  --green:#0D9488;--red:#DC2626;--purple:#7C3AED;
+}
+body.gtheme-light .sidebar,body.gtheme-light .topbar{background:#FFFFFF!important;}
+body.gtheme-light{background:#F0F4F8!important;}
+body.gtheme-purple {
+  --bg:#050508;--surface:#0D0B14;--surface2:#13101C;--surface3:#1A1628;
+  --border:#241E38;--border2:#352A52;
+  --accent:#A78BFA;--accent2:#F472B6;--warn:#F472B6;
+  --text:#EDE9FE;--text2:#C4B5FD;--text3:#6D5FA6;
+  --green:#A78BFA;--red:#F87171;--purple:#F472B6;
+}
+body.gtheme-purple .sidebar,body.gtheme-purple .topbar{background:#0D0B14!important;}
+body.gtheme-purple{background:#050508!important;}
+body.gtheme-amber {
+  --bg:#0A0800;--surface:#141000;--surface2:#1C1700;--surface3:#252000;
+  --border:#302800;--border2:#4A3D00;
+  --accent:#FCD34D;--accent2:#FB923C;--warn:#FB923C;
+  --text:#FFFBEB;--text2:#FDE68A;--text3:#78610A;
+  --green:#FCD34D;--red:#F87171;--purple:#FB923C;
+}
+body.gtheme-amber .sidebar,body.gtheme-amber .topbar{background:#141000!important;}
+body.gtheme-amber{background:#0A0800!important;}
+
+/* ── THEME PICKER ── */
+.theme-picker-wrap{position:relative;display:flex;align-items:center;}
+.theme-picker-btn{
+  display:flex;align-items:center;gap:7px;
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text2);padding:5px 11px;border-radius:7px;
+  font-size:.74rem;cursor:pointer;font-family:var(--sans);transition:all .15s;
+}
+.theme-picker-btn:hover{border-color:var(--border2);color:var(--text);}
+.theme-picker-btn .tp-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.theme-picker-dropdown{
+  display:none;position:absolute;top:calc(100% + 8px);right:0;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:6px;min-width:175px;
+  z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.5);
+  animation:fadeIn .15s ease;
+}
+.theme-picker-dropdown.open{display:block;}
+.theme-opt{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:7px;cursor:pointer;
+  font-size:.78rem;color:var(--text2);transition:all .12s;
+}
+.theme-opt:hover{background:var(--surface3);color:var(--text);}
+.theme-opt.active{background:var(--surface3);color:var(--accent);font-weight:600;}
+.theme-opt-swatch{display:flex;gap:3px;}
+.theme-opt-swatch span{width:9px;height:9px;border-radius:2px;}
 
 /* ── SIDEBAR TABLES SECTION ── */
 .sidebar-tables-section {
@@ -964,6 +1041,29 @@ body.theme-functions .loading-spinner {
     <div class="topbar-nav">
       <button class="btn-nav" id="btnPrev" onclick="navigate(-1)">← Anterior</button>
       <button class="btn-nav" id="btnNext" onclick="navigate(1)">Próximo →</button>
+      <div class="theme-picker-wrap" id="themePickerWrap">
+        <button class="theme-picker-btn" onclick="toggleThemePicker()" id="themePickerBtn">
+          <span class="tp-dot"></span> Tema ▾
+        </button>
+        <div class="theme-picker-dropdown" id="themePickerDropdown">
+          <div class="theme-opt active" data-theme="neon" onclick="applyGlobalTheme('neon',this)">
+            <div class="theme-opt-swatch"><span style="background:#0E1117"></span><span style="background:#4FFFB0"></span><span style="background:#00D4FF"></span></div>
+            Padrão
+          </div>
+          <div class="theme-opt" data-theme="light" onclick="applyGlobalTheme('light',this)">
+            <div class="theme-opt-swatch"><span style="background:#F0F4F8"></span><span style="background:#0D9488"></span><span style="background:#0891B2"></span></div>
+            Claro
+          </div>
+          <div class="theme-opt" data-theme="purple" onclick="applyGlobalTheme('purple',this)">
+            <div class="theme-opt-swatch"><span style="background:#050508"></span><span style="background:#A78BFA"></span><span style="background:#F472B6"></span></div>
+            Roxo + Preto
+          </div>
+          <div class="theme-opt" data-theme="amber" onclick="applyGlobalTheme('amber',this)">
+            <div class="theme-opt-swatch"><span style="background:#0A0800"></span><span style="background:#FCD34D"></span><span style="background:#FB923C"></span></div>
+            Âmbar + Preto
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1742,6 +1842,9 @@ function buildSidebar() {
       const t = document.createElement('div');
       t.className = 'nav-module-title';
       t.textContent = `Modulo ${m.id} — ${m.title}`;
+      t.style.cursor = 'pointer';
+      t.title = `Ir para o Módulo ${m.id}`;
+      t.onclick = () => goToModule(m.id);
       nav.appendChild(t);
     }
     const item = document.createElement('div');
@@ -1830,9 +1933,9 @@ setThemeByModule(ex.mod);
 const isRh = ex.db === 'rh';
 const badge = document.getElementById('activeBadge');
 badge.textContent = isRh ? 'db_rh' : 'db_ecommerce';
-badge.style.background = isRh ? 'rgba(192,132,252,.15)' : 'rgba(79,255,176,.12)';
-badge.style.color = isRh ? '#C084FC' : '#4FFFB0';
-badge.style.borderColor = isRh ? 'rgba(192,132,252,.3)' : 'rgba(79,255,176,.25)';
+badge.style.background = isRh ? 'rgba(192,132,252,.15)' : 'rgba(var(--accent-rgb,79,255,176),.12)';
+badge.style.color = isRh ? 'var(--purple)' : 'var(--accent)';
+badge.style.borderColor = isRh ? 'rgba(192,132,252,.3)' : 'rgba(var(--accent-rgb,79,255,176),.25)';
 document.getElementById('topbarInfo').textContent = `Exercicio ${ex.id} de 25`;
 document.getElementById('btnPrev').disabled = idx === 0;
 document.getElementById('btnNext').disabled = idx === EXERCISES.length - 1;
@@ -1857,13 +1960,14 @@ const saveHtml = isSaved
 ? `<span class="save-indicator"><span class="save-dot"></span>Salvo</span>`
 : `<span class="save-indicator" style="color:var(--text3)">Nao salvo</span>`;
 
-// Modulo info com funcoes clicaveis (aparece em toda questao)
-const moduleTopicsHtml = mod.topics.map(t => `<span class="module-topic-link" onclick="showFunctionsPage('${t}')">${t}</span>`).join('');
+// Modulo info com funcoes clicaveis — mostra funcoes do modulo + tags da atividade (sem duplicatas)
+const allTopics = [...new Set([...mod.topics, ...(ex.tags || [])])];
+const moduleTopicsHtml = allTopics.map(t => `<span class="module-topic-link" onclick="showFunctionsPage('${t}')">${t}</span>`).join('');
 
 area.innerHTML = `
 <div class="ex-header-left">
 <div class="ex-badge-level-row">
-<div class="ex-module-badge ${mod.color}">Modulo ${mod.id}</div>
+<div class="ex-module-badge ${mod.color}" style="cursor:pointer" onclick="goToModule(${mod.id})" title="Ir para o Módulo ${mod.id}">Modulo ${mod.id}</div>
 ${renderLevelBadge(ex)}
 </div>
 <div class="ex-number-title-row">
@@ -1871,7 +1975,7 @@ ${renderLevelBadge(ex)}
 <span class="ex-title-inline">${ex.title}</span>
 </div>
 <div class="ex-module-functions">
-<span class="ex-fn-label">Funcoes do modulo:</span>
+<span class="ex-fn-label">Funções usadas:</span>
 ${moduleTopicsHtml}
 </div>
 </div>
@@ -2763,7 +2867,7 @@ function buildModulesPage() {
     const expectationsHtml = info.expectations.map(e => `<li>${e}</li>`).join('');
     
     html += `
-      <div class="module-info-card" style="margin-bottom:20px">
+      <div class="module-info-card" style="margin-bottom:20px;cursor:pointer" onclick="hideModulesPage();goToModule(${mod.id})" title="Ir para o Módulo ${mod.id}">
         <div class="module-info-header">
           <span class="module-info-badge mod-${mod.id}">Modulo ${mod.id}</span>
           <span class="module-info-level">${mod.level}</span>
@@ -2771,7 +2875,8 @@ function buildModulesPage() {
         <div class="module-info-title">${info.title}</div>
         <div class="module-info-desc">${info.desc}</div>
         ${expectationsHtml ? `<ul style="margin:12px 0 12px 18px;color:var(--text2);font-size:.85rem;line-height:1.7">${expectationsHtml}</ul>` : ''}
-        <div class="module-info-topics">${topicsHtml}</div>
+        <div class="module-info-topics" onclick="event.stopPropagation()">${topicsHtml}</div>
+        <div style="margin-top:14px;font-size:.72rem;color:var(--accent);font-family:var(--mono)">→ Ir para o módulo</div>
       </div>
     `;
   }
@@ -2804,8 +2909,134 @@ function hideModulesPage(skipTheme) {
 }
 
 // ════════════════════════════════════════════════════════
+// THEME PICKER — com localStorage
+// ════════════════════════════════════════════════════════
+let currentGlobalTheme = localStorage.getItem('sqlpratica-theme') || 'neon';
+
+const THEME_PALETTES = {
+  neon:   { bg:'#0E1117', surface:'#161B27', surface2:'#1E2535', surface3:'#252D40', border:'#2A3348', border2:'#3A4560', accent:'#4FFFB0', accent2:'#00D4FF', text:'#F0F4FF', text2:'#C0CCDD', text3:'#5A6480', green:'#4FFFB0', red:'#FF6B6B', purple:'#C084FC', sidebarBg:'#161B27', dot:'#4FFFB0' },
+  light:  { bg:'#F0F4F8', surface:'#FFFFFF', surface2:'#E8EFF5', surface3:'#D8E4ED', border:'#C5D4E0', border2:'#A8BDCC', accent:'#0D9488', accent2:'#0891B2', text:'#0F172A', text2:'#334155', text3:'#64748B', green:'#0D9488', red:'#DC2626', purple:'#7C3AED', sidebarBg:'#FFFFFF', dot:'#0D9488' },
+  purple: { bg:'#050508', surface:'#0D0B14', surface2:'#13101C', surface3:'#1A1628', border:'#241E38', border2:'#352A52', accent:'#A78BFA', accent2:'#F472B6', text:'#EDE9FE', text2:'#C4B5FD', text3:'#6D5FA6', green:'#A78BFA', red:'#F87171', purple:'#F472B6', sidebarBg:'#0D0B14', dot:'#A78BFA' },
+  amber:  { bg:'#0A0800', surface:'#141000', surface2:'#1C1700', surface3:'#252000', border:'#302800', border2:'#4A3D00', accent:'#FCD34D', accent2:'#FB923C', text:'#FFFBEB', text2:'#FDE68A', text3:'#78610A', green:'#FCD34D', red:'#F87171', purple:'#FB923C', sidebarBg:'#141000', dot:'#FCD34D' },
+};
+
+function applyThemePalette(theme) {
+  const p = THEME_PALETTES[theme];
+  if (!p) return;
+  const r = document.documentElement.style;
+  r.setProperty('--bg', p.bg);
+  r.setProperty('--surface', p.surface);
+  r.setProperty('--surface2', p.surface2);
+  r.setProperty('--surface3', p.surface3);
+  r.setProperty('--border', p.border);
+  r.setProperty('--border2', p.border2);
+  r.setProperty('--accent', p.accent);
+  r.setProperty('--accent2', p.accent2);
+  r.setProperty('--text', p.text);
+  r.setProperty('--text2', p.text2);
+  r.setProperty('--text3', p.text3);
+  r.setProperty('--green', p.green);
+  r.setProperty('--red', p.red);
+  r.setProperty('--purple', p.purple);
+  document.body.style.background = p.bg;
+  // Sidebar e topbar
+  const sidebar = document.querySelector('.sidebar');
+  const topbar = document.querySelector('.topbar');
+  if (sidebar) sidebar.style.background = p.sidebarBg;
+  if (topbar) topbar.style.background = p.sidebarBg;
+  // Dot do botão
+  const dot = document.querySelector('.theme-picker-btn .tp-dot');
+  if (dot) dot.style.background = p.dot;
+  // Resetar module themes para nao conflitar
+  if (theme !== 'neon') {
+    // Sobrescreve theme-mod-* para usar as cores do tema global
+    let styleTag = document.getElementById('dynamic-theme-override');
+    if (!styleTag) { styleTag = document.createElement('style'); styleTag.id = 'dynamic-theme-override'; document.head.appendChild(styleTag); }
+    styleTag.textContent = `
+      body[class*="theme-mod-"], body[class*="theme-tables-"], body.theme-functions {
+        --theme-accent: ${p.accent} !important;
+        --theme-accent2: ${p.accent2} !important;
+        --theme-bg: ${p.bg} !important;
+        --accent: ${p.accent} !important;
+        --accent2: ${p.accent2} !important;
+        background: ${p.bg} !important;
+      }
+      .sidebar { background: ${p.sidebarBg} !important; }
+      .topbar { background: ${p.sidebarBg} !important; }
+      .btn-run { background: ${p.accent} !important; color: ${theme==='light'?'#fff':'#000'} !important; }
+      .btn-run:hover { background: ${p.accent2} !important; }
+      .sql-editor-bolt { caret-color: ${p.accent} !important; }
+      .logo-text { background: linear-gradient(90deg, ${p.accent}, ${p.accent2}) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important; }
+      .progress-bar-fill { background: linear-gradient(90deg, ${p.accent}, ${p.accent2}) !important; }
+    `;
+  } else {
+    const styleTag = document.getElementById('dynamic-theme-override');
+    if (styleTag) styleTag.textContent = '';
+  }
+}
+
+function toggleThemePicker() {
+  const dd = document.getElementById('themePickerDropdown');
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) {
+    setTimeout(() => document.addEventListener('click', closeTpOnOutside, { once: true }), 10);
+  }
+}
+
+function closeTpOnOutside(e) {
+  const wrap = document.getElementById('themePickerWrap');
+  if (wrap && !wrap.contains(e.target)) document.getElementById('themePickerDropdown').classList.remove('open');
+}
+
+function applyGlobalTheme(theme, el) {
+  currentGlobalTheme = theme;
+  localStorage.setItem('sqlpratica-theme', theme);
+  // Remover classes globais antigas
+  document.body.classList.remove('gtheme-light','gtheme-purple','gtheme-amber');
+  if (theme !== 'neon') document.body.classList.add('gtheme-' + theme);
+  // Aplicar paleta via CSS vars inline
+  applyThemePalette(theme);
+  // Atualizar active nos opts
+  document.querySelectorAll('.theme-opt').forEach(o => o.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else {
+    const opt = document.querySelector(`.theme-opt[data-theme="${theme}"]`);
+    if (opt) opt.classList.add('active');
+  }
+  document.getElementById('themePickerDropdown').classList.remove('open');
+  // Re-aplicar badge do banco de dados com cores atuais
+  const ex = EXERCISES[currentEx];
+  if (ex) {
+    const badge = document.getElementById('activeBadge');
+    if (badge) {
+      const p = THEME_PALETTES[theme];
+      const isRh = ex.db === 'rh';
+      badge.style.color = isRh ? p.purple : p.accent;
+      badge.style.background = isRh ? 'rgba(192,132,252,.15)' : 'rgba(128,128,128,.15)';
+      badge.style.borderColor = isRh ? 'rgba(192,132,252,.3)' : 'rgba(128,128,128,.3)';
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// NAVEGAR PARA MÓDULO (clique no badge do módulo)
+// ════════════════════════════════════════════════════════
+function goToModule(modId) {
+  // Acha o primeiro exercício do módulo
+  const idx = EXERCISES.findIndex(ex => ex.mod === modId);
+  if (idx !== -1) {
+    // Se estiver em outra página, fechar
+    if (tablesPageVisible) hideTablesPage(true);
+    if (functionsPageVisible) hideFunctionsPage(true);
+    if (modulesPageVisible) hideModulesPage(true);
+    document.getElementById('exerciseArea').style.display = '';
+    goTo(idx);
+  }
+}
+
+// ════════════════════════════════════════════════════════
 // BOOT
-// ═════════════════════════════════════════════════��══════
+// ════════════════════════════════════════════════════════
 (async () => {
   // Timeout para evitar carregamento infinito (15 segundos)
   const loadingTimeout = setTimeout(() => {
@@ -2824,6 +3055,8 @@ function hideModulesPage(skipTheme) {
     buildSidebar();
     renderExercise(0);
     updateProgress();
+    // Restaurar tema salvo
+    applyGlobalTheme(currentGlobalTheme, null);
 
     // Verificar se o editor esta visivel apos renderizacao
     setTimeout(() => {
