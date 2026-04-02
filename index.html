@@ -484,6 +484,70 @@ body {
   font-size: .68rem; color: var(--text3); font-family: var(--mono);
   display: flex; align-items: center; gap: 5px;
 }
+
+/* ── VERSION BADGE ── */
+.version-badge {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--mono);
+  font-size: .7rem;
+  color: var(--text3);
+  z-index: 100;
+  user-select: none;
+}
+
+/* ── FUNCTIONS PAGE ── */
+.functions-page { display: none; }
+.functions-page.active { display: block; }
+.functions-page-header { margin-bottom: 28px; }
+.functions-page-title {
+  font-family: var(--display); font-size: 1.5rem; font-weight: 800;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 6px;
+}
+.functions-page-sub { font-size: .85rem; color: var(--text3); }
+.fn-module-section { margin-bottom: 32px; }
+.fn-module-label {
+  font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 7px;
+  margin-bottom: 16px;
+}
+.fn-module-label.mod-1 { color: var(--accent); background: rgba(79,255,176,.08); border: 1px solid rgba(79,255,176,.25); }
+.fn-module-label.mod-2 { color: var(--purple); background: rgba(192,132,252,.08); border: 1px solid rgba(192,132,252,.25); }
+.fn-module-label.mod-3 { color: var(--accent2); background: rgba(0,212,255,.08); border: 1px solid rgba(0,212,255,.25); }
+.fn-module-label.mod-4 { color: var(--accent2); background: rgba(0,212,255,.08); border: 1px solid rgba(0,212,255,.25); }
+.fn-module-label.mod-5 { color: var(--red); background: rgba(255,107,107,.08); border: 1px solid rgba(255,107,107,.25); }
+.fn-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 18px; margin-bottom: 14px;
+}
+.fn-card-title {
+  font-family: var(--mono); font-size: .9rem; color: var(--accent2);
+  font-weight: 600; margin-bottom: 8px;
+}
+.fn-card-desc { font-size: .85rem; color: var(--text2); line-height: 1.6; margin-bottom: 10px; }
+.fn-card-syntax {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+  padding: 10px 14px; font-family: var(--mono); font-size: .78rem;
+  color: var(--accent); white-space: pre-wrap; overflow-x: auto;
+}
+.fn-card-example {
+  margin-top: 8px; font-size: .78rem; color: var(--text3);
+}
+.fn-card-example code {
+  background: var(--surface3); padding: 1px 5px; border-radius: 3px; color: var(--accent);
+}
+.fn-extra-section { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border); }
+.fn-extra-title {
+  font-family: var(--display); font-size: 1.1rem; font-weight: 700;
+  color: var(--text); margin-bottom: 16px;
+}
 .save-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -701,6 +765,22 @@ body {
       </div>
     </div>
   </div>
+  <!-- FUNCTIONS SECTION -->
+  <div class="sidebar-tables-section">
+    <div class="sidebar-tables-header" onclick="toggleFunctionsSection()">
+      <div class="sidebar-tables-label">
+        <span class="tbl-icon" style="color:var(--accent)">ƒ</span> Funcoes
+      </div>
+      <span class="sidebar-tables-toggle" id="functionsSectionToggle">▾</span>
+    </div>
+    <div class="sidebar-tables-body" id="sidebarFunctionsBody">
+      <div class="sidebar-db-btn-wrap">
+        <button class="sidebar-db-btn ec" id="fnbtn-wiki" onclick="showFunctionsPage()">
+          <span class="sidebar-db-btn-dot ec"></span>Wiki MySQL
+        </button>
+      </div>
+    </div>
+  </div>
 </nav>
 
 <!-- MAIN -->
@@ -734,23 +814,105 @@ body {
         <div class="tables-grid" id="tablesGridRh"></div>
       </div>
     </div>
+    <!-- FUNCTIONS PAGE -->
+    <div class="exercise-area functions-page" id="functionsPage"></div>
   </div>
 </main>
 
 </div>
 
 <div class="confetti-wrap" id="confettiWrap"></div>
+<div class="version-badge">V 2.0</div>
 
 <script>
 // ════════════════════════════════════════════════════════
 // EXERCISES DATA
 // ════════════════════════════════════════════════════════
 const MODULES = [
-  { id:1, icon:'#', title:'SELECT, WHERE e Filtros',         level:'Basico',        color:'mod-1', desc:'Fundamentos da leitura de dados: selecionar colunas, filtrar linhas e ordenar resultados.', topics:['SELECT','WHERE','ORDER BY','BETWEEN','IN','LIKE','Funcoes de data'] },
-  { id:2, icon:'#', title:'Funcoes Agregadas e GROUP BY',   level:'Basico-Medio',  color:'mod-2', desc:'Resumir grandes volumes de dados usando funcoes de agregacao e agrupamento.',               topics:['COUNT','SUM','AVG','ROUND','GROUP BY','HAVING'] },
-  { id:3, icon:'#', title:'JOINs',                           level:'Medio',         color:'mod-3', desc:'Combinar dados de multiplas tabelas usando diferentes tipos de JOIN.',                      topics:['INNER JOIN','LEFT JOIN','Self JOIN','COALESCE'] },
+  { id:1, icon:'#', title:'SELECT, WHERE e Filtros',         level:'Basico',        color:'mod-1', desc:'Fundamentos da leitura de dados: selecionar colunas, filtrar linhas e ordenar resultados.', topics:['WHERE','ORDER BY','BETWEEN','IN','LIKE','YEAR()'] },
+  { id:2, icon:'#', title:'Funcoes Agregadas e GROUP BY',   level:'Basico-Medio',  color:'mod-2', desc:'Resumir grandes volumes de dados usando funcoes de agregacao e agrupamento.',               topics:['COUNT','SUM','AVG','ROUND','GROUP BY','HAVING','LIMIT'] },
+  { id:3, icon:'#', title:'JOINs',                           level:'Medio',         color:'mod-3', desc:'Combinar dados de multiplas tabelas usando diferentes tipos de JOIN.',                      topics:['INNER JOIN','LEFT JOIN','IS NULL','COALESCE'] },
   { id:4, icon:'#', title:'Subqueries e CTEs',               level:'Medio',         color:'mod-4', desc:'Queries dentro de queries e expressoes de tabela comuns para codigo mais legivel.',         topics:['Subquery','IN (subquery)','Subquery correlacionada','WITH (CTE)'] },
-  { id:5, icon:'#', title:'Window Functions',                level:'Avancado',      color:'mod-5', desc:'Calculos analiticos avancados sem colapsar linhas — o diferencial do analista senior.',     topics:['RANK() OVER','PARTITION BY','LAG()','SUM() OVER','CASE WHEN'] },
+  { id:5, icon:'#', title:'Window Functions',                level:'Avancado',      color:'mod-5', desc:'Calculos analiticos avancados sem colapsar linhas — o diferencial do analista senior.',     topics:['RANK()','PARTITION BY','LAG()','SUM() OVER','DATE_FORMAT','CASE WHEN'] },
+];
+
+// Funcoes agrupadas por modulo para a wiki
+const MODULE_FUNCTIONS = {
+  1: {
+    title: 'Modulo 1 — SELECT, WHERE e Filtros',
+    functions: [
+      { name: 'WHERE', desc: 'Filtra linhas com base em uma condicao especifica.', syntax: 'WHERE condicao', example: 'WHERE ativo = 1' },
+      { name: 'ORDER BY', desc: 'Ordena os resultados por uma ou mais colunas. Use ASC (crescente) ou DESC (decrescente).', syntax: 'ORDER BY coluna [ASC|DESC]', example: 'ORDER BY nome ASC' },
+      { name: 'BETWEEN', desc: 'Filtra valores dentro de um intervalo (inclusivo).', syntax: 'WHERE coluna BETWEEN valor1 AND valor2', example: 'WHERE preco BETWEEN 200 AND 1000' },
+      { name: 'IN', desc: 'Filtra por multiplos valores de uma vez, substituindo varios ORs.', syntax: 'WHERE coluna IN (valor1, valor2, ...)', example: "WHERE status IN ('Cancelado', 'Processando')" },
+      { name: 'LIKE', desc: 'Busca por padrao de texto. % substitui qualquer sequencia de caracteres.', syntax: "WHERE coluna LIKE 'padrao'", example: "WHERE nome LIKE 'M%' -- comeca com M" },
+      { name: 'YEAR()', desc: 'Extrai o ano de uma data. Funcao especifica do MySQL.', syntax: 'YEAR(coluna_data)', example: 'WHERE YEAR(data_pedido) = 2023' },
+    ]
+  },
+  2: {
+    title: 'Modulo 2 — Funcoes Agregadas e GROUP BY',
+    functions: [
+      { name: 'COUNT()', desc: 'Conta o numero de linhas ou valores nao nulos.', syntax: 'COUNT(*) ou COUNT(coluna)', example: 'SELECT COUNT(*) AS total FROM pedidos' },
+      { name: 'SUM()', desc: 'Soma todos os valores de uma coluna numerica.', syntax: 'SUM(coluna)', example: 'SELECT SUM(total) AS receita FROM pedidos' },
+      { name: 'AVG()', desc: 'Calcula a media dos valores de uma coluna.', syntax: 'AVG(coluna)', example: 'SELECT AVG(preco) AS preco_medio FROM produtos' },
+      { name: 'ROUND()', desc: 'Arredonda um numero para N casas decimais.', syntax: 'ROUND(valor, casas_decimais)', example: 'ROUND(AVG(preco), 2)' },
+      { name: 'GROUP BY', desc: 'Agrupa linhas com valores iguais para aplicar funcoes de agregacao.', syntax: 'GROUP BY coluna1, coluna2', example: 'SELECT status, COUNT(*) FROM pedidos GROUP BY status' },
+      { name: 'HAVING', desc: 'Filtra grupos APOS a agregacao (diferente de WHERE que filtra ANTES).', syntax: 'HAVING condicao_agregada', example: 'HAVING AVG(preco) > 500' },
+      { name: 'LIMIT', desc: 'Restringe o numero de resultados retornados.', syntax: 'LIMIT numero', example: 'ORDER BY total DESC LIMIT 5' },
+    ]
+  },
+  3: {
+    title: 'Modulo 3 — JOINs',
+    functions: [
+      { name: 'INNER JOIN', desc: 'Combina linhas de duas tabelas quando ha correspondencia na condicao ON. Linhas sem correspondencia sao descartadas.', syntax: 'FROM tabela_a JOIN tabela_b ON condicao', example: 'FROM pedidos p JOIN clientes c ON p.cliente_id = c.cliente_id' },
+      { name: 'LEFT JOIN', desc: 'Retorna TODAS as linhas da tabela esquerda, mesmo sem correspondencia na direita (colunas ficam NULL).', syntax: 'FROM tabela_a LEFT JOIN tabela_b ON condicao', example: 'FROM clientes c LEFT JOIN pedidos p ON c.cliente_id = p.cliente_id' },
+      { name: 'IS NULL', desc: 'Verifica se um valor e nulo. Usado com LEFT JOIN para encontrar registros sem correspondencia.', syntax: 'WHERE coluna IS NULL', example: 'WHERE p.pedido_id IS NULL -- clientes sem pedidos' },
+      { name: 'COALESCE()', desc: 'Retorna o primeiro valor nao nulo da lista. Perfeito para substituir NULLs.', syntax: 'COALESCE(valor1, valor2, ...)', example: "COALESCE(g.nome, 'Sem gestor') AS gestor" },
+    ]
+  },
+  4: {
+    title: 'Modulo 4 — Subqueries e CTEs',
+    functions: [
+      { name: 'Subquery Escalar', desc: 'Uma subquery que retorna um unico valor, usada em comparacoes.', syntax: 'WHERE coluna > (SELECT AGG(col) FROM tabela)', example: 'WHERE preco > (SELECT AVG(preco) FROM produtos)' },
+      { name: 'Subquery com IN', desc: 'Subquery que retorna uma lista de valores para filtrar.', syntax: 'WHERE coluna IN (SELECT col FROM tabela WHERE ...)', example: 'WHERE cliente_id IN (SELECT cliente_id FROM pedidos WHERE ...)' },
+      { name: 'Subquery Correlacionada', desc: 'Subquery que referencia colunas da query externa. Executada uma vez por linha.', syntax: 'WHERE col > (SELECT AGG(col) FROM tab WHERE tab.fk = externa.pk)', example: 'WHERE f1.salario > (SELECT AVG(f2.salario) FROM funcionarios f2 WHERE f2.depto_id = f1.depto_id)' },
+      { name: 'WITH (CTE)', desc: 'Common Table Expression - cria uma "tabela temporaria nomeada" para melhor legibilidade.', syntax: 'WITH nome_cte AS (SELECT ...) SELECT * FROM nome_cte', example: 'WITH receitas AS (SELECT produto_id, SUM(total) AS rec FROM ...) SELECT * FROM receitas' },
+    ]
+  },
+  5: {
+    title: 'Modulo 5 — Window Functions',
+    functions: [
+      { name: 'RANK()', desc: 'Atribui um ranking as linhas dentro de uma janela. Valores iguais recebem o mesmo rank.', syntax: 'RANK() OVER (PARTITION BY col ORDER BY col)', example: 'RANK() OVER (PARTITION BY depto_id ORDER BY salario DESC) AS rank_salario' },
+      { name: 'PARTITION BY', desc: 'Define os grupos (janelas) para window functions. O calculo reinicia a cada grupo.', syntax: 'OVER (PARTITION BY coluna ...)', example: 'SUM(valor) OVER (PARTITION BY categoria)' },
+      { name: 'LAG()', desc: 'Retorna o valor da linha ANTERIOR dentro da janela. Util para comparar com periodos anteriores.', syntax: 'LAG(coluna) OVER (PARTITION BY ... ORDER BY ...)', example: 'LAG(nota) OVER (PARTITION BY func_id ORDER BY ano) AS nota_anterior' },
+      { name: 'SUM() OVER', desc: 'Soma acumulada (running total). Cada linha recebe a soma de todas as anteriores + ela mesma.', syntax: 'SUM(coluna) OVER (ORDER BY coluna)', example: 'SUM(receita_mes) OVER (ORDER BY mes) AS receita_acumulada' },
+      { name: 'DATE_FORMAT()', desc: 'Formata uma data conforme um padrao especificado.', syntax: "DATE_FORMAT(data, 'formato')", example: "DATE_FORMAT(data_pedido, '%Y-%m') AS mes" },
+      { name: 'CASE WHEN', desc: 'O "if/else" do SQL. Cria colunas calculadas com valores condicionais.', syntax: "CASE WHEN cond THEN 'val1' ELSE 'val2' END", example: "CASE WHEN gasto > 3000 THEN 'VIP' ELSE 'Regular' END AS classificacao" },
+    ]
+  }
+};
+
+// Funcoes extras nao usadas nos exercicios
+const EXTRA_FUNCTIONS = [
+  { name: 'MIN()', desc: 'Retorna o menor valor de uma coluna.', syntax: 'MIN(coluna)', example: 'SELECT MIN(preco) FROM produtos' },
+  { name: 'MAX()', desc: 'Retorna o maior valor de uma coluna.', syntax: 'MAX(coluna)', example: 'SELECT MAX(salario) FROM funcionarios' },
+  { name: 'DISTINCT', desc: 'Remove valores duplicados dos resultados.', syntax: 'SELECT DISTINCT coluna', example: 'SELECT DISTINCT categoria FROM produtos' },
+  { name: 'CONCAT()', desc: 'Concatena duas ou mais strings.', syntax: "CONCAT(str1, str2, ...)", example: "CONCAT(nome, ' - ', cargo)" },
+  { name: 'UPPER() / LOWER()', desc: 'Converte texto para maiusculas ou minusculas.', syntax: 'UPPER(texto) / LOWER(texto)', example: 'SELECT UPPER(nome) FROM clientes' },
+  { name: 'LENGTH()', desc: 'Retorna o numero de caracteres de uma string.', syntax: 'LENGTH(texto)', example: 'WHERE LENGTH(nome) > 10' },
+  { name: 'SUBSTRING()', desc: 'Extrai parte de uma string.', syntax: 'SUBSTRING(texto, inicio, tamanho)', example: "SUBSTRING(email, 1, 5)" },
+  { name: 'TRIM()', desc: 'Remove espacos em branco do inicio e fim de uma string.', syntax: 'TRIM(texto)', example: 'TRIM(nome)' },
+  { name: 'NOW()', desc: 'Retorna a data e hora atuais.', syntax: 'NOW()', example: 'WHERE data_cadastro < NOW()' },
+  { name: 'CURDATE()', desc: 'Retorna apenas a data atual (sem hora).', syntax: 'CURDATE()', example: 'WHERE data_pedido = CURDATE()' },
+  { name: 'DATEDIFF()', desc: 'Calcula a diferenca em dias entre duas datas.', syntax: 'DATEDIFF(data1, data2)', example: 'DATEDIFF(NOW(), data_cadastro) AS dias_cadastrado' },
+  { name: 'IFNULL()', desc: 'Retorna um valor alternativo se o primeiro for NULL (similar ao COALESCE).', syntax: 'IFNULL(valor, alternativa)', example: "IFNULL(telefone, 'Nao informado')" },
+  { name: 'CAST()', desc: 'Converte um valor para outro tipo de dados.', syntax: 'CAST(valor AS tipo)', example: 'CAST(preco AS SIGNED)' },
+  { name: 'ROW_NUMBER()', desc: 'Atribui um numero sequencial unico a cada linha dentro da janela.', syntax: 'ROW_NUMBER() OVER (ORDER BY col)', example: 'ROW_NUMBER() OVER (ORDER BY data DESC) AS linha' },
+  { name: 'DENSE_RANK()', desc: 'Similar ao RANK, mas sem "pular" numeros em caso de empate.', syntax: 'DENSE_RANK() OVER (ORDER BY col)', example: 'DENSE_RANK() OVER (ORDER BY pontos DESC)' },
+  { name: 'LEAD()', desc: 'Retorna o valor da proxima linha dentro da janela (oposto do LAG).', syntax: 'LEAD(coluna) OVER (ORDER BY col)', example: 'LEAD(valor) OVER (ORDER BY mes) AS proximo_mes' },
+  { name: 'RIGHT JOIN', desc: 'Similar ao LEFT JOIN, mas retorna todas as linhas da tabela DIREITA.', syntax: 'FROM tab_a RIGHT JOIN tab_b ON cond', example: 'Raramente usado - prefira LEFT JOIN invertendo as tabelas' },
+  { name: 'UNION', desc: 'Combina os resultados de duas queries, removendo duplicatas.', syntax: 'SELECT ... UNION SELECT ...', example: 'SELECT nome FROM clientes UNION SELECT nome FROM funcionarios' },
+  { name: 'UNION ALL', desc: 'Combina os resultados de duas queries, mantendo duplicatas (mais rapido).', syntax: 'SELECT ... UNION ALL SELECT ...', example: 'SELECT id FROM tab1 UNION ALL SELECT id FROM tab2' },
 ];
 
 // level: 'estagio' | 'jr' | 'nao-estagio'
@@ -1865,6 +2027,7 @@ function toggleExpected(btn) {
 function goTo(idx) {
   currentEx = idx;
   if (tablesPageVisible) hideTablesPage();
+  if (functionsPageVisible) hideFunctionsPage();
   buildSidebar();
   renderExercise(idx);
 }
@@ -2023,20 +2186,25 @@ function handleEnterAutoIndent(e) {
   e.preventDefault();
   const ta = e.target;
   const start = ta.selectionStart;
+  const end = ta.selectionEnd;
   const lineStart = ta.value.lastIndexOf('\n', start - 1) + 1;
   const currentLine = ta.value.substring(lineStart, start);
   const indent = currentLine.match(/^(\s*)/)[1];
 
-  // Auto-align: if line starts with a SQL keyword, keep indent; otherwise inherit
-  const upper = currentLine.trimStart().toUpperCase();
-  const autoKeywords = ['SELECT','FROM','WHERE','ORDER','GROUP','HAVING','JOIN','LEFT','RIGHT','INNER','ON','AND','OR','WITH','UNION','CASE','WHEN','THEN','ELSE','END','LIMIT'];
-  const isKeywordLine = autoKeywords.some(k => upper.startsWith(k));
-
+  // Insert newline with proper indentation
   const ins = '\n' + indent;
-  ta.value = ta.value.substring(0, start) + ins + ta.value.substring(ta.selectionEnd);
+  const beforeCursor = ta.value.substring(0, start);
+  const afterCursor = ta.value.substring(end);
+  ta.value = beforeCursor + ins + afterCursor;
   ta.selectionStart = ta.selectionEnd = start + ins.length;
+  
+  // Force update all editor components
   updateLineNumbers(ta);
   autoResizeEditor(ta);
+  updateHighlight(ta);
+  
+  // Trigger input event to ensure all listeners are notified
+  ta.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 function initSqlEditor(editor) {
@@ -2060,6 +2228,13 @@ function initSqlEditor(editor) {
 function toggleTablesSection() {
   const body = document.getElementById('sidebarTablesBody');
   const toggle = document.getElementById('tablesSectionToggle');
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+function toggleFunctionsSection() {
+  const body = document.getElementById('sidebarFunctionsBody');
+  const toggle = document.getElementById('functionsSectionToggle');
   body.classList.toggle('open');
   toggle.classList.toggle('open');
 }
@@ -2156,17 +2331,110 @@ function hideTablesPage() {
 }
 
 // ════════════════════════════════════════════════════════
+// FUNCTIONS PAGE
+// ════════════════════════════════════════════════════════
+let functionsPageVisible = false;
+
+function buildFunctionsPage() {
+  const page = document.getElementById('functionsPage');
+  if (page.dataset.built) return;
+  page.dataset.built = '1';
+
+  let html = `
+    <div class="functions-page-header">
+      <div class="functions-page-title">Wiki de Funcoes MySQL</div>
+      <div class="functions-page-sub">Referencia completa das funcoes usadas nos exercicios, organizadas por modulo.</div>
+    </div>
+  `;
+
+  // Funcoes por modulo
+  for (let modId = 1; modId <= 5; modId++) {
+    const modData = MODULE_FUNCTIONS[modId];
+    html += `
+      <div class="fn-module-section">
+        <div class="fn-module-label mod-${modId}">${modData.title}</div>
+    `;
+    for (const fn of modData.functions) {
+      html += `
+        <div class="fn-card">
+          <div class="fn-card-title">${fn.name}</div>
+          <div class="fn-card-desc">${fn.desc}</div>
+          <div class="fn-card-syntax">${fn.syntax}</div>
+          <div class="fn-card-example">Exemplo: <code>${fn.example}</code></div>
+        </div>
+      `;
+    }
+    html += '</div>';
+  }
+
+  // Funcoes extras
+  html += `
+    <div class="fn-extra-section">
+      <div class="fn-extra-title">Funcoes Extras (nao usadas nos exercicios)</div>
+  `;
+  for (const fn of EXTRA_FUNCTIONS) {
+    html += `
+      <div class="fn-card">
+        <div class="fn-card-title">${fn.name}</div>
+        <div class="fn-card-desc">${fn.desc}</div>
+        <div class="fn-card-syntax">${fn.syntax}</div>
+        <div class="fn-card-example">Exemplo: <code>${fn.example}</code></div>
+      </div>
+    `;
+  }
+  html += '</div>';
+
+  page.innerHTML = html;
+}
+
+function showFunctionsPage() {
+  functionsPageVisible = true;
+  if (tablesPageVisible) hideTablesPage();
+  document.getElementById('exerciseArea').style.display = 'none';
+  document.getElementById('functionsPage').classList.add('active');
+  document.getElementById('fnbtn-wiki').classList.add('active-db');
+  buildFunctionsPage();
+}
+
+function hideFunctionsPage() {
+  functionsPageVisible = false;
+  document.getElementById('exerciseArea').style.display = '';
+  document.getElementById('functionsPage').classList.remove('active');
+  document.getElementById('fnbtn-wiki').classList.remove('active-db');
+}
+
+// ════════════════════════════════════════════════════════
 // BOOT
 // ════════════════════════════════════════════════════════
 (async () => {
+  // Timeout para evitar carregamento infinito (15 segundos)
+  const loadingTimeout = setTimeout(() => {
+    const msg = document.querySelector('.loading-msg');
+    if (msg && document.getElementById('loadingScreen').style.display !== 'none') {
+      msg.textContent = 'Carregamento demorado. Recarregue a pagina.';
+      msg.style.color = '#FF6B6B';
+    }
+  }, 15000);
+
   try {
     await initDatabases();
+    clearTimeout(loadingTimeout);
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('appLayout').style.display = 'flex';
     buildSidebar();
     renderExercise(0);
     updateProgress();
+
+    // Verificar se o editor esta visivel apos renderizacao
+    setTimeout(() => {
+      const editor = document.getElementById('sqlEditor');
+      if (editor && (editor.offsetWidth === 0 || editor.offsetHeight === 0)) {
+        console.warn('[v0] Editor pode estar invisivel. Forcando re-render...');
+        renderExercise(currentEx);
+      }
+    }, 500);
   } catch(err) {
+    clearTimeout(loadingTimeout);
     const msg = document.querySelector('.loading-msg');
     msg.textContent = 'Erro ao carregar: ' + err.message;
     msg.style.color = '#FF6B6B';
