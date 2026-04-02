@@ -173,11 +173,15 @@ body {
   border-radius: 20px; padding: 2px 10px;
   font-size: .68rem; color: var(--text3); margin-bottom: 8px;
 }
-.module-topics { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 12px; }
+.module-topics { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 14px; }
 .module-topic {
   font-family: var(--mono); font-size: .68rem;
   padding: 3px 9px; border-radius: 5px;
   background: var(--surface3); border: 1px solid var(--border); color: var(--text3);
+  cursor: pointer; transition: all .15s;
+}
+.module-topic:hover {
+  background: rgba(79,255,176,.1); border-color: var(--accent); color: var(--accent);
 }
 
 /* ── TABLE PREVIEW (SQLZoo style) ── */
@@ -232,7 +236,61 @@ body {
 .ex-module-badge {
   display: inline-flex; align-items: center; gap: 5px;
   font-size: .67rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 1.5px; padding: 3px 9px; border-radius: 5px; margin-bottom: 14px;
+  letter-spacing: 1.5px; padding: 3px 9px; border-radius: 5px;
+}
+.ex-header-left {
+  margin-bottom: 22px;
+}
+.ex-badge-level-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.ex-number-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.ex-number-inline {
+  font-family: var(--display);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.ex-number-inline.mod-1 { color: #4FFFB0; }
+.ex-number-inline.mod-2 { color: #C084FC; }
+.ex-number-inline.mod-3 { color: #00D4FF; }
+.ex-number-inline.mod-4 { color: #00D4FF; }
+.ex-number-inline.mod-5 { color: #FF6B6B; }
+.ex-title-inline {
+  font-family: var(--display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.ex-module-functions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.ex-fn-label {
+  font-size: .7rem;
+  color: var(--text3);
+  font-weight: 500;
+}
+.module-topic-link {
+  font-family: var(--mono); font-size: .68rem;
+  padding: 3px 9px; border-radius: 5px;
+  background: var(--surface3); border: 1px solid var(--border); color: var(--text3);
+  cursor: pointer; transition: all .15s;
+}
+.module-topic-link:hover {
+  background: rgba(79,255,176,.1); border-color: var(--accent); color: var(--accent);
 }
 .ex-header-row { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
 .ex-number {
@@ -765,23 +823,16 @@ body {
       </div>
     </div>
   </div>
-  <!-- FUNCTIONS SECTION -->
+<!-- FUNCTIONS SECTION (direct click) -->
   <div class="sidebar-tables-section">
-    <div class="sidebar-tables-header" onclick="toggleFunctionsSection()">
-      <div class="sidebar-tables-label">
-        <span class="tbl-icon" style="color:var(--accent)">ƒ</span> Funcoes
-      </div>
-      <span class="sidebar-tables-toggle" id="functionsSectionToggle">▾</span>
-    </div>
-    <div class="sidebar-tables-body" id="sidebarFunctionsBody">
-      <div class="sidebar-db-btn-wrap">
-        <button class="sidebar-db-btn ec" id="fnbtn-wiki" onclick="showFunctionsPage()">
-          <span class="sidebar-db-btn-dot ec"></span>Wiki MySQL
-        </button>
-      </div>
-    </div>
+  <div class="sidebar-tables-header" onclick="showFunctionsPage()" style="cursor:pointer">
+  <div class="sidebar-tables-label">
+  <span class="tbl-icon" style="color:var(--accent)">ƒ</span> Funcoes
   </div>
-</nav>
+  <span class="sidebar-tables-toggle" id="fnbtn-wiki" style="font-size:.65rem;color:var(--text3)">Wiki</span>
+  </div>
+  </div>
+  </nav>
 
 <!-- MAIN -->
 <main class="main">
@@ -822,18 +873,18 @@ body {
 </div>
 
 <div class="confetti-wrap" id="confettiWrap"></div>
-<div class="version-badge">V 2.0</div>
+<div class="version-badge">V 1.0</div>
 
 <script>
 // ════════════════════════════════════════════════════════
 // EXERCISES DATA
 // ════════════════════════════════════════════════════════
 const MODULES = [
-  { id:1, icon:'#', title:'SELECT, WHERE e Filtros',         level:'Basico',        color:'mod-1', desc:'Fundamentos da leitura de dados: selecionar colunas, filtrar linhas e ordenar resultados.', topics:['WHERE','ORDER BY','BETWEEN','IN','LIKE','YEAR()'] },
-  { id:2, icon:'#', title:'Funcoes Agregadas e GROUP BY',   level:'Basico-Medio',  color:'mod-2', desc:'Resumir grandes volumes de dados usando funcoes de agregacao e agrupamento.',               topics:['COUNT','SUM','AVG','ROUND','GROUP BY','HAVING','LIMIT'] },
-  { id:3, icon:'#', title:'JOINs',                           level:'Medio',         color:'mod-3', desc:'Combinar dados de multiplas tabelas usando diferentes tipos de JOIN.',                      topics:['INNER JOIN','LEFT JOIN','IS NULL','COALESCE'] },
-  { id:4, icon:'#', title:'Subqueries e CTEs',               level:'Medio',         color:'mod-4', desc:'Queries dentro de queries e expressoes de tabela comuns para codigo mais legivel.',         topics:['Subquery','IN (subquery)','Subquery correlacionada','WITH (CTE)'] },
-  { id:5, icon:'#', title:'Window Functions',                level:'Avancado',      color:'mod-5', desc:'Calculos analiticos avancados sem colapsar linhas — o diferencial do analista senior.',     topics:['RANK()','PARTITION BY','LAG()','SUM() OVER','DATE_FORMAT','CASE WHEN'] },
+  { id:1, icon:'#', title:'SELECT, WHERE e Filtros',         level:'Basico',        color:'mod-1', desc:'Neste modulo voce aprendera os fundamentos essenciais do SQL: como selecionar colunas especificas com SELECT, filtrar registros com WHERE usando operadores de comparacao, ordenar resultados com ORDER BY, e aplicar filtros avancados como BETWEEN (intervalos), IN (listas de valores) e LIKE (padroes de texto). Tambem vera como extrair partes de datas com funcoes como YEAR(). Estas sao as habilidades mais usadas no dia a dia de qualquer analista.', topics:['WHERE','ORDER BY','BETWEEN','IN','LIKE','YEAR()'] },
+  { id:2, icon:'#', title:'Funcoes Agregadas e GROUP BY',   level:'Basico-Medio',  color:'mod-2', desc:'Aqui voce dominara as funcoes de agregacao que transformam muitas linhas em resumos uteis: COUNT para contar registros, SUM para somar valores, AVG para calcular medias, e ROUND para arredondar resultados. O GROUP BY permite agrupar dados por categorias (ex: vendas por mes, clientes por cidade), enquanto HAVING filtra esses grupos apos a agregacao. Com LIMIT voce controla quantos resultados retornar. Essencial para criar relatorios e dashboards.', topics:['COUNT','SUM','AVG','ROUND','GROUP BY','HAVING','LIMIT'] },
+  { id:3, icon:'#', title:'JOINs',                           level:'Medio',         color:'mod-3', desc:'JOINs sao a chave para combinar dados de multiplas tabelas relacionadas. O INNER JOIN retorna apenas registros com correspondencia em ambas as tabelas, enquanto o LEFT JOIN mantem todos os registros da tabela esquerda mesmo sem correspondencia (util para encontrar "orfaos"). Voce aprendera a usar IS NULL para identificar registros sem match e COALESCE para substituir valores nulos por padroes. Dominar JOINs e o que separa iniciantes de analistas competentes.', topics:['INNER JOIN','LEFT JOIN','IS NULL','COALESCE'] },
+  { id:4, icon:'#', title:'Subqueries e CTEs',               level:'Medio',         color:'mod-4', desc:'Subqueries sao queries dentro de queries, permitindo comparacoes dinamicas (ex: "produtos acima da media de preco") e filtros baseados em outras consultas. Subqueries correlacionadas referenciam a query externa para calculos linha a linha. CTEs (Common Table Expressions) com WITH criam "tabelas temporarias nomeadas" que tornam queries complexas muito mais legiveis e faceis de debugar. Estas tecnicas sao fundamentais para resolver problemas analiticos mais sofisticados.', topics:['Subquery','IN (subquery)','Subquery correlacionada','WITH (CTE)'] },
+  { id:5, icon:'#', title:'Window Functions',                level:'Avancado',      color:'mod-5', desc:'Window Functions sao o diferencial do analista senior. Diferente de GROUP BY que colapsa linhas, elas calculam valores "sobre uma janela" mantendo cada linha individual. RANK() cria rankings, PARTITION BY define grupos para os calculos, LAG() acessa valores de linhas anteriores (otimo para comparar com periodo anterior), e SUM() OVER cria totais acumulados. Com DATE_FORMAT voce formata datas e CASE WHEN adiciona logica condicional. Dominar isso coloca voce no top 10% dos analistas.', topics:['RANK()','PARTITION BY','LAG()','SUM() OVER','DATE_FORMAT','CASE WHEN'] },
 ];
 
 // Funcoes agrupadas por modulo para a wiki
@@ -1629,69 +1680,73 @@ function renderLevelBadge(ex) {
 // RENDER EXERCISE
 // ════════════════════════════════════════════════════════
 function renderExercise(idx) {
-  const ex = EXERCISES[idx];
-  const mod = MODULES[ex.mod - 1];
-  const area = document.getElementById('exerciseArea');
+const ex = EXERCISES[idx];
+const mod = MODULES[ex.mod - 1];
+const area = document.getElementById('exerciseArea');
 
-  // Topbar
-  const isRh = ex.db === 'rh';
-  const badge = document.getElementById('activeBadge');
-  badge.textContent = isRh ? 'db_rh' : 'db_ecommerce';
-  badge.style.background = isRh ? 'rgba(192,132,252,.15)' : 'rgba(79,255,176,.12)';
-  badge.style.color = isRh ? '#C084FC' : '#4FFFB0';
-  badge.style.borderColor = isRh ? 'rgba(192,132,252,.3)' : 'rgba(79,255,176,.25)';
-  document.getElementById('topbarInfo').textContent = `Exercicio ${ex.id} de 25`;
-  document.getElementById('btnPrev').disabled = idx === 0;
-  document.getElementById('btnNext').disabled = idx === EXERCISES.length - 1;
+// Topbar
+const isRh = ex.db === 'rh';
+const badge = document.getElementById('activeBadge');
+badge.textContent = isRh ? 'db_rh' : 'db_ecommerce';
+badge.style.background = isRh ? 'rgba(192,132,252,.15)' : 'rgba(79,255,176,.12)';
+badge.style.color = isRh ? '#C084FC' : '#4FFFB0';
+badge.style.borderColor = isRh ? 'rgba(192,132,252,.3)' : 'rgba(79,255,176,.25)';
+document.getElementById('topbarInfo').textContent = `Exercicio ${ex.id} de 25`;
+document.getElementById('btnPrev').disabled = idx === 0;
+document.getElementById('btnNext').disabled = idx === EXERCISES.length - 1;
 
-  // Module intro
-  const isFirstOfMod = idx === 0 || EXERCISES[idx - 1].mod !== ex.mod;
-  const modHtml = isFirstOfMod ? `
-    <div class="module-intro">
-      <div class="module-level">${mod.level}</div>
-      <h2>Modulo ${mod.id} — ${mod.title}</h2>
-      <p>${mod.desc}</p>
-      <div class="module-topics">${mod.topics.map(t => `<span class="module-topic">${t}</span>`).join('')}</div>
-    </div>
-  ` : '';
+// Module intro (apenas primeira questao do modulo)
+const isFirstOfMod = idx === 0 || EXERCISES[idx - 1].mod !== ex.mod;
+const modIntroTopicsHtml = mod.topics.map(t => `<span class="module-topic-link" onclick="showFunctionsPage('${t}')">${t}</span>`).join('');
+const modIntroHtml = isFirstOfMod ? `
+<div class="module-intro">
+<div class="module-level">${mod.level}</div>
+<h2>Modulo ${mod.id} — ${mod.title}</h2>
+<p>${mod.desc}</p>
+<div class="module-topics">${modIntroTopicsHtml}</div>
+</div>
+` : '';
 
-  // Function explainer
-  const fnHtml = ex.fn_explain ? `
-    <div class="fn-explainer">
-      <div class="fn-explainer-title">${ex.fn_explain.title}</div>
-      <p>${ex.fn_explain.content.replace(/\n/g,'<br>').replace(/`([^`]+)`/g,'<code>$1</code>')}</p>
-      ${ex.fn_explain.syntax ? `<div class="fn-syntax">${ex.fn_explain.syntax}</div>` : ''}
-    </div>
-  ` : '';
+// Function explainer
+const fnHtml = ex.fn_explain ? `
+<div class="fn-explainer">
+<div class="fn-explainer-title">${ex.fn_explain.title}</div>
+<p>${ex.fn_explain.content.replace(/\n/g,'<br>').replace(/`([^`]+)`/g,'<code>$1</code>')}</p>
+${ex.fn_explain.syntax ? `<div class="fn-syntax">${ex.fn_explain.syntax}</div>` : ''}
+</div>
+` : '';
 
-  // Tags
-  const tagsHtml = ex.tags.map(t => `<span class="ex-tag">${t}</span>`).join('');
+// Hint
+const hintHtml = ex.hint ? `<div class="problem-hint"><span>Dica:</span><span>${ex.hint}</span></div>` : '';
 
-  // Hint
-  const hintHtml = ex.hint ? `<div class="problem-hint"><span>Dica:</span><span>${ex.hint}</span></div>` : '';
+// Save indicator
+const isSaved = completed.has(idx);
+const saveHtml = isSaved
+? `<span class="save-indicator"><span class="save-dot"></span>Salvo</span>`
+: `<span class="save-indicator" style="color:var(--text3)">Nao salvo</span>`;
 
-  // Save indicator
-  const isSaved = completed.has(idx);
-  const saveHtml = isSaved
-    ? `<span class="save-indicator"><span class="save-dot"></span>Salvo</span>`
-    : `<span class="save-indicator" style="color:var(--text3)">Nao salvo</span>`;
+// Modulo info com funcoes clicaveis (aparece em toda questao)
+const moduleTopicsHtml = mod.topics.map(t => `<span class="module-topic-link" onclick="showFunctionsPage('${t}')">${t}</span>`).join('');
 
-  area.innerHTML = `
-    ${modHtml}
+area.innerHTML = `
+${modIntroHtml}
 
-    <div class="ex-module-badge ${mod.color}">Modulo ${mod.id}</div>
-    <div class="ex-header-row">
-      <div class="ex-number ${mod.color}">${String(ex.id).padStart(2,'0')}</div>
-      <div class="ex-title-block">
-        <div class="ex-title">${ex.title}</div>
-        <div class="ex-meta">
-          ${tagsHtml}
-          ${renderLevelBadge(ex)}
-        </div>
-      </div>
-    </div>
+<div class="ex-header-left">
+<div class="ex-badge-level-row">
+<div class="ex-module-badge ${mod.color}">Modulo ${mod.id}</div>
+${renderLevelBadge(ex)}
+</div>
+<div class="ex-number-title-row">
+<span class="ex-number-inline ${mod.color}">${String(ex.id).padStart(2,'0')}</span>
+<span class="ex-title-inline">${ex.title}</span>
+</div>
+<div class="ex-module-functions">
+<span class="ex-fn-label">Funcoes do modulo:</span>
+${moduleTopicsHtml}
+</div>
+</div>
 
-    ${fnHtml}
+${fnHtml}
 
     <div class="problem-box">
       <p>${ex.problem}</p>
@@ -1825,7 +1880,7 @@ function tryMetaCommand(sql, currentDb) {
   return null; // not a meta command
 }
 
-// ════════════════════════════════════════════════════════
+// ══════════���═════════════════════════════════════════════
 // QUERY EXECUTION
 // ════════════════════════════════════════════════════════
 function runQuery() {
@@ -1940,7 +1995,7 @@ function toggleSolution(btn) {
 
 // ════════════════════════════════════════════════════════
 // COPY CODE FUNCTIONS
-// ════════════════════════════════════════════════════════
+// ════��═══════════════════════════════════════════════════
 function copyEditorCode() {
   const editor = document.getElementById('sqlEditor');
   if (!editor || !editor.value.trim()) {
@@ -2023,7 +2078,7 @@ function toggleExpected(btn) {
 
 // ════════════════════════════════════════════════════════
 // NAVIGATION
-// ════════════════════════════════════════════════════════
+// ═════════════════════════════════���══��═══════════════════
 function goTo(idx) {
   currentEx = idx;
   if (tablesPageVisible) hideTablesPage();
@@ -2042,7 +2097,7 @@ function updateProgress() {
   document.getElementById('progressCount').textContent = `${completed.size} / ${EXERCISES.length} completos`;
 }
 
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════��════════════════
 // CONFETTI
 // ════════════════════════════════════════════════════════
 function launchConfetti() {
@@ -2075,7 +2130,7 @@ const SQL_KEYWORDS = ['SELECT','FROM','WHERE','ORDER BY','GROUP BY','HAVING','JO
 
 // ════════════════════════════════════════════════════════
 // SQL SYNTAX HIGHLIGHT OVERLAY
-// ════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════��═
 const HL_KEYWORDS = [
   'SELECT','FROM','WHERE','ORDER BY','GROUP BY','HAVING',
   'LEFT JOIN','RIGHT JOIN','INNER JOIN','FULL JOIN','CROSS JOIN','JOIN',
@@ -2232,13 +2287,6 @@ function toggleTablesSection() {
   toggle.classList.toggle('open');
 }
 
-function toggleFunctionsSection() {
-  const body = document.getElementById('sidebarFunctionsBody');
-  const toggle = document.getElementById('functionsSectionToggle');
-  body.classList.toggle('open');
-  toggle.classList.toggle('open');
-}
-
 // ════════════════════════════════════════════════════════
 // TABLES PAGE
 // ════════════════════════════════════════════════════════
@@ -2330,7 +2378,7 @@ function hideTablesPage() {
   document.querySelectorAll('.sidebar-db-btn').forEach(el => el.classList.remove('active-db'));
 }
 
-// ════════════════════════════════════════════════════════
+// ════════���═══════════════════════════════════════════════
 // FUNCTIONS PAGE
 // ════════════════════════════════════════════════════════
 let functionsPageVisible = false;
@@ -2354,16 +2402,17 @@ function buildFunctionsPage() {
       <div class="fn-module-section">
         <div class="fn-module-label mod-${modId}">${modData.title}</div>
     `;
-    for (const fn of modData.functions) {
-      html += `
-        <div class="fn-card">
-          <div class="fn-card-title">${fn.name}</div>
-          <div class="fn-card-desc">${fn.desc}</div>
-          <div class="fn-card-syntax">${fn.syntax}</div>
-          <div class="fn-card-example">Exemplo: <code>${fn.example}</code></div>
-        </div>
-      `;
-    }
+for (const fn of modData.functions) {
+  const fnId = fn.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  html += `
+  <div class="fn-card" id="fn-${fnId}">
+  <div class="fn-card-title">${fn.name}</div>
+  <div class="fn-card-desc">${fn.desc}</div>
+  <div class="fn-card-syntax">${fn.syntax}</div>
+  <div class="fn-card-example">Exemplo: <code>${fn.example}</code></div>
+  </div>
+  `;
+  }
     html += '</div>';
   }
 
@@ -2372,40 +2421,57 @@ function buildFunctionsPage() {
     <div class="fn-extra-section">
       <div class="fn-extra-title">Funcoes Extras (nao usadas nos exercicios)</div>
   `;
-  for (const fn of EXTRA_FUNCTIONS) {
-    html += `
-      <div class="fn-card">
-        <div class="fn-card-title">${fn.name}</div>
-        <div class="fn-card-desc">${fn.desc}</div>
-        <div class="fn-card-syntax">${fn.syntax}</div>
-        <div class="fn-card-example">Exemplo: <code>${fn.example}</code></div>
-      </div>
-    `;
+for (const fn of EXTRA_FUNCTIONS) {
+  const fnId = fn.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  html += `
+  <div class="fn-card" id="fn-${fnId}">
+  <div class="fn-card-title">${fn.name}</div>
+  <div class="fn-card-desc">${fn.desc}</div>
+  <div class="fn-card-syntax">${fn.syntax}</div>
+  <div class="fn-card-example">Exemplo: <code>${fn.example}</code></div>
+  </div>
+  `;
   }
   html += '</div>';
 
   page.innerHTML = html;
 }
 
-function showFunctionsPage() {
-  functionsPageVisible = true;
-  if (tablesPageVisible) hideTablesPage();
-  document.getElementById('exerciseArea').style.display = 'none';
-  document.getElementById('functionsPage').classList.add('active');
-  document.getElementById('fnbtn-wiki').classList.add('active-db');
-  buildFunctionsPage();
+function showFunctionsPage(fnName) {
+functionsPageVisible = true;
+if (tablesPageVisible) hideTablesPage();
+document.getElementById('exerciseArea').style.display = 'none';
+document.getElementById('functionsPage').classList.add('active');
+const fnBtn = document.getElementById('fnbtn-wiki');
+if (fnBtn) fnBtn.style.color = 'var(--accent)';
+buildFunctionsPage();
+
+// Se um nome de funcao foi passado, scroll ate ela
+if (fnName) {
+  const fnId = fnName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  setTimeout(() => {
+    const el = document.getElementById('fn-' + fnId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Highlight temporario
+      el.style.boxShadow = '0 0 0 2px var(--accent)';
+      setTimeout(() => { el.style.boxShadow = ''; }, 2000);
+    }
+  }, 100);
+}
 }
 
 function hideFunctionsPage() {
-  functionsPageVisible = false;
-  document.getElementById('exerciseArea').style.display = '';
-  document.getElementById('functionsPage').classList.remove('active');
-  document.getElementById('fnbtn-wiki').classList.remove('active-db');
+functionsPageVisible = false;
+document.getElementById('exerciseArea').style.display = '';
+document.getElementById('functionsPage').classList.remove('active');
+const fnBtn = document.getElementById('fnbtn-wiki');
+if (fnBtn) fnBtn.style.color = 'var(--text3)';
 }
 
 // ════════════════════════════════════════════════════════
 // BOOT
-// ════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════��══════
 (async () => {
   // Timeout para evitar carregamento infinito (15 segundos)
   const loadingTimeout = setTimeout(() => {
