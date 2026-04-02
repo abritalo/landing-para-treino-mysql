@@ -1391,7 +1391,7 @@ function renderExercise(idx) {
       </div>
       <div class="editor-container" id="editorContainer">
         <div class="editor-lines" id="editorLines"><div class="editor-line-num">1</div></div>
-        <textarea class="sql-editor-bolt" id="sqlEditor" placeholder="-- Digite sua query aqui..." spellcheck="false" rows="6"></textarea>
+        <textarea class="sql-editor-bolt" id="sqlEditor" placeholder="-- Digite sua query aqui...&#10;-- Comandos suportados: SHOW TABLES, SHOW DATABASES, DESCRIBE tabela, SHOW COLUMNS FROM tabela, SHOW CREATE TABLE tabela" spellcheck="false" rows="6"></textarea>
       </div>
       <div class="editor-actions">
         <button class="btn-run" onclick="runQuery()">&#9654; Executar</button>
@@ -1423,6 +1423,84 @@ function renderExercise(idx) {
 }
 
 // ════════════════════════════════════════════════════════
+// MYSQL META-COMMAND EMULATION
+// ════════════════════════════════════════════════════════
+const EC_TABLES = ['clientes','produtos','pedidos','itens_pedido'];
+const RH_TABLES = ['departamentos','funcionarios','avaliacoes'];
+
+// Column definitions for DESCRIBE / SHOW COLUMNS
+const TABLE_SCHEMA = {
+  clientes:      [{Field:'cliente_id',Type:'INT',Null:'NO',Key:'PRI',Default:null},{Field:'nome',Type:'VARCHAR(100)',Null:'NO',Key:'',Default:null},{Field:'email',Type:'VARCHAR(100)',Null:'YES',Key:'',Default:null},{Field:'cidade',Type:'VARCHAR(80)',Null:'YES',Key:'',Default:null},{Field:'estado',Type:'CHAR(2)',Null:'YES',Key:'',Default:null},{Field:'data_cadastro',Type:'DATE',Null:'YES',Key:'',Default:null},{Field:'ativo',Type:'TINYINT',Null:'NO',Key:'',Default:'1'}],
+  produtos:      [{Field:'produto_id',Type:'INT',Null:'NO',Key:'PRI',Default:null},{Field:'nome_produto',Type:'VARCHAR(120)',Null:'NO',Key:'',Default:null},{Field:'categoria',Type:'VARCHAR(60)',Null:'YES',Key:'',Default:null},{Field:'preco',Type:'DECIMAL(10,2)',Null:'NO',Key:'',Default:null},{Field:'estoque',Type:'INT',Null:'NO',Key:'',Default:'0'},{Field:'fornecedor_id',Type:'INT',Null:'YES',Key:'MUL',Default:null}],
+  pedidos:       [{Field:'pedido_id',Type:'INT',Null:'NO',Key:'PRI',Default:null},{Field:'cliente_id',Type:'INT',Null:'NO',Key:'MUL',Default:null},{Field:'data_pedido',Type:'DATE',Null:'YES',Key:'',Default:null},{Field:'status',Type:'VARCHAR(30)',Null:'YES',Key:'',Default:null},{Field:'total',Type:'DECIMAL(10,2)',Null:'YES',Key:'',Default:null},{Field:'metodo_pagamento',Type:'VARCHAR(40)',Null:'YES',Key:'',Default:null}],
+  itens_pedido:  [{Field:'item_id',Type:'INT',Null:'NO',Key:'PRI',Default:null},{Field:'pedido_id',Type:'INT',Null:'NO',Key:'MUL',Default:null},{Field:'produto_id',Type:'INT',Null:'NO',Key:'MUL',Default:null},{Field:'quantidade',Type:'INT',Null:'NO',Key:'',Default:null},{Field:'preco_unitario',Type:'DECIMAL(10,2)',Null:'NO',Key:'',Default:null}],
+  departamentos: [{Field:'depto_id',Type:'INT',Null:'NO',Key:'PRI',Default:null},{Field:'nome_depto',Type:'VARCHAR(60)',Null:'NO',Key:'',Default:null},{Field:'cidade',Type:'VARCHAR(60)',Null:'YES',Key:'',Default:null},{Field:'orcamento_anual',Type:'DECIMAL(12,2)',Null:'YES',Key:'',Default:null}],
+  funcionarios:  [{Field:'func_id',Type:'INT',Null:'NO',Key:'PRI',Default:null},{Field:'nome',Type:'VARCHAR(100)',Null:'NO',Key:'',Default:null},{Field:'cargo',Type:'VARCHAR(80)',Null:'YES',Key:'',Default:null},{Field:'depto_id',Type:'INT',Null:'YES',Key:'MUL',Default:null},{Field:'salario',Type:'DECIMAL(10,2)',Null:'YES',Key:'',Default:null},{Field:'data_admissao',Type:'DATE',Null:'YES',Key:'',Default:null},{Field:'gestor_id',Type:'INT',Null:'YES',Key:'MUL',Default:null},{Field:'ativo',Type:'TINYINT',Null:'NO',Key:'',Default:'1'}],
+  avaliacoes:    [{Field:'avaliacao_id',Type:'INT',Null:'NO',Key:'PRI',Default:null},{Field:'func_id',Type:'INT',Null:'NO',Key:'MUL',Default:null},{Field:'ano',Type:'INT',Null:'NO',Key:'',Default:null},{Field:'nota',Type:'INT',Null:'NO',Key:'',Default:null},{Field:'observacao',Type:'TEXT',Null:'YES',Key:'',Default:null}],
+};
+
+function tryMetaCommand(sql, currentDb) {
+  // Normalise: collapse whitespace, trim, uppercase for matching
+  const norm = sql.replace(/\s+/g,' ').trim();
+  const up   = norm.toUpperCase();
+
+  // ── SHOW DATABASES ────────────────────────────────────
+  if (/^SHOW\s+DATABASES\s*;?$/i.test(norm)) {
+    const cols = ['Database'];
+    const rows = [['db_ecommerce'],['db_rh']];
+    return { cols, rows, meta: 'Bancos de dados disponíveis neste ambiente.' };
+  }
+
+  // ── SHOW TABLES ───────────────────────────────────────
+  if (/^SHOW\s+TABLES\s*;?$/i.test(norm)) {
+    const label = currentDb === 'rh' ? 'Tables_in_db_rh' : 'Tables_in_db_ecommerce';
+    const list  = currentDb === 'rh' ? RH_TABLES : EC_TABLES;
+    return { cols: [label], rows: list.map(t=>[t]), meta: null };
+  }
+
+  // ── SHOW TABLES FROM db ───────────────────────────────
+  const stFrom = norm.match(/^SHOW\s+TABLES\s+(?:FROM|IN)\s+(\S+?)\s*;?$/i);
+  if (stFrom) {
+    const dbName = stFrom[1].replace(/`/g,'').toLowerCase();
+    if (dbName === 'db_rh' || dbName === 'rh') {
+      return { cols:['Tables_in_db_rh'], rows: RH_TABLES.map(t=>[t]), meta:null };
+    }
+    return { cols:['Tables_in_db_ecommerce'], rows: EC_TABLES.map(t=>[t]), meta:null };
+  }
+
+  // ── DESCRIBE / DESC / SHOW COLUMNS FROM ──────────────
+  const descMatch = norm.match(/^(?:DESCRIBE|DESC)\s+`?(\w+)`?\s*;?$/i)
+                 || norm.match(/^SHOW\s+COLUMNS\s+(?:FROM|IN)\s+`?(\w+)`?\s*;?$/i)
+                 || norm.match(/^SHOW\s+FULL\s+COLUMNS\s+(?:FROM|IN)\s+`?(\w+)`?\s*;?$/i);
+  if (descMatch) {
+    const tbl = descMatch[1].toLowerCase();
+    if (TABLE_SCHEMA[tbl]) {
+      const cols = ['Field','Type','Null','Key','Default'];
+      const rows = TABLE_SCHEMA[tbl].map(c=>[c.Field,c.Type,c.Null,c.Key,c.Default===null?'NULL':c.Default]);
+      return { cols, rows, meta: `Estrutura da tabela: ${tbl}` };
+    }
+    return { error: `Tabela '${descMatch[1]}' nao encontrada. Tabelas disponíveis: ${(currentDb==='rh'?RH_TABLES:EC_TABLES).join(', ')}` };
+  }
+
+  // ── SHOW CREATE TABLE ─────────────────────────────────
+  const sctMatch = norm.match(/^SHOW\s+CREATE\s+TABLE\s+`?(\w+)`?\s*;?$/i);
+  if (sctMatch) {
+    const tbl = sctMatch[1].toLowerCase();
+    if (!TABLE_SCHEMA[tbl]) return { error: `Tabela '${sctMatch[1]}' nao encontrada.` };
+    const fields = TABLE_SCHEMA[tbl].map(c=>`  \`${c.Field}\` ${c.Type}${c.Null==='NO'?' NOT NULL':''}${c.Key==='PRI'?' PRIMARY KEY':''}`).join(',\n');
+    const ddl = `CREATE TABLE \`${tbl}\` (\n${fields}\n)`;
+    return { cols:['Table','Create Table'], rows:[[tbl, ddl]], meta:null };
+  }
+
+  // ── SHOW STATUS / SHOW VARIABLES (stub) ──────────────
+  if (/^SHOW\s+(STATUS|VARIABLES|ENGINES|PROCESSLIST)\s*;?$/i.test(norm)) {
+    return { cols:['Info'], rows:[['Comando suportado apenas no MySQL real. Neste ambiente SQLite, use SHOW TABLES ou DESCRIBE tabela.']], meta:null };
+  }
+
+  return null; // not a meta command
+}
+
+// ════════════════════════════════════════════════════════
 // QUERY EXECUTION
 // ════════════════════════════════════════════════════════
 function runQuery() {
@@ -1431,6 +1509,14 @@ function runQuery() {
   editorStates[currentEx] = sql;
 
   if (!sql) { showResult('error','Escreva uma query antes de executar.', null, null); return; }
+
+  // ── Check for MySQL meta-commands first ───────────────
+  const meta = tryMetaCommand(sql, ex.db);
+  if (meta) {
+    if (meta.error) { showResult('error', meta.error, null, null); return; }
+    showResult('info', meta.meta || `${meta.rows.length} linha${meta.rows.length!==1?'s':''} retornada${meta.rows.length!==1?'s':''}.`, meta.rows.map(r=>{const o={};meta.cols.forEach((c,i)=>o[c]=r[i]);return o;}), meta.cols, true);
+    return;
+  }
 
   const db = ex.db === 'rh' ? db_rh : db_ecommerce;
   try {
@@ -1451,7 +1537,6 @@ function runQuery() {
         buildSidebar();
         launchConfetti();
         showToast('Exercicio ' + ex.id + ' concluido e salvo!');
-        // Update save indicator
         const si = document.querySelector('.save-indicator');
         if (si) si.innerHTML = '<span class="save-dot"></span>Salvo';
       }
@@ -1464,25 +1549,34 @@ function runQuery() {
   }
 }
 
-function showResult(type, text, rows, columns) {
+function showResult(type, text, rows, columns, isMeta) {
   const area = document.getElementById('resultArea');
   const icons = { correct:'✓', wrong:'✗', info:'i', error:'!' };
   let tableHtml = '';
   if (rows && rows.length > 0 && columns) {
+    // For meta results, render multiline cell content (e.g. SHOW CREATE TABLE DDL)
     const heads = columns.map(c=>`<th>${c}</th>`).join('');
-    const body = rows.slice(0,50).map(r=>
-      `<tr>${columns.map(c=>`<td>${r[c]===null?'<span class="null-val">NULL</span>':r[c]}</td>`).join('')}</tr>`
+    const body = rows.slice(0,200).map(r=>
+      `<tr>${columns.map(c=>{
+        const v = r[c];
+        if (v === null) return `<td><span class="null-val">NULL</span></td>`;
+        // If value contains newlines (DDL), wrap in <pre>
+        const str = String(v);
+        if (str.includes('\n')) return `<td style="white-space:pre;vertical-align:top;font-family:var(--mono);font-size:.75rem;color:var(--accent)">${str}</td>`;
+        return `<td>${str}</td>`;
+      }).join('')}</tr>`
     ).join('');
-    const more = rows.length>50 ? `<tr><td colspan="${columns.length}" style="text-align:center;color:var(--text3);padding:10px">... e mais ${rows.length-50} linhas</td></tr>` : '';
+    const more = rows.length>200 ? `<tr><td colspan="${columns.length}" style="text-align:center;color:var(--text3);padding:10px">... e mais ${rows.length-200} linhas</td></tr>` : '';
     tableHtml = `<div class="result-table-wrap"><table class="result-table"><thead><tr>${heads}</tr></thead><tbody>${body}${more}</tbody></table></div>`;
   } else if (rows && rows.length === 0) {
     tableHtml = `<div style="color:var(--text3);font-size:.8rem;font-family:var(--mono);padding:12px 0">Nenhuma linha retornada.</div>`;
   }
+  const rowsLabel = (rows && !isMeta) ? `<span class="status-rows">${rows.length} rows</span>` : (rows && isMeta) ? `<span class="status-rows">${rows.length} row${rows.length!==1?'s':''}</span>` : '';
   area.innerHTML = `
     <div class="result-status ${type}">
       <span style="font-weight:700;font-family:var(--mono);font-size:1rem">${icons[type]}</span>
       <span class="status-text">${text}</span>
-      ${rows ? `<span class="status-rows">${rows.length} rows</span>` : ''}
+      ${rowsLabel}
     </div>
     ${tableHtml}
   `;
@@ -1544,7 +1638,7 @@ function showToast(msg) {
 // ════════════════════════════════════════════════════════
 // SQLBOLT-STYLE EDITOR
 // ════════════════════════════════════════════════════════
-const SQL_KEYWORDS = ['SELECT','FROM','WHERE','ORDER BY','GROUP BY','HAVING','JOIN','LEFT JOIN','RIGHT JOIN','INNER JOIN','ON','AS','AND','OR','NOT','IN','IS NULL','IS NOT NULL','BETWEEN','LIKE','LIMIT','OFFSET','DISTINCT','COUNT','SUM','AVG','MIN','MAX','ROUND','COALESCE','CASE','WHEN','THEN','ELSE','END','WITH','UNION','INSERT','UPDATE','DELETE','CREATE','DROP','ALTER','PARTITION BY','OVER','RANK','ROW_NUMBER','DENSE_RANK','LAG','LEAD','NULL','ASC','DESC'];
+const SQL_KEYWORDS = ['SELECT','FROM','WHERE','ORDER BY','GROUP BY','HAVING','JOIN','LEFT JOIN','RIGHT JOIN','INNER JOIN','ON','AS','AND','OR','NOT','IN','IS NULL','IS NOT NULL','BETWEEN','LIKE','LIMIT','OFFSET','DISTINCT','COUNT','SUM','AVG','MIN','MAX','ROUND','COALESCE','CASE','WHEN','THEN','ELSE','END','WITH','UNION','INSERT','UPDATE','DELETE','CREATE','DROP','ALTER','PARTITION BY','OVER','RANK','ROW_NUMBER','DENSE_RANK','LAG','LEAD','NULL','ASC','DESC','SHOW','SHOW TABLES','SHOW DATABASES','DESCRIBE','DESC'];
 
 function updateLineNumbers(editor) {
   const lines = editor.value.split('\n');
@@ -1570,6 +1664,7 @@ function handleTab(e) {
 
 function handleEnterAutoIndent(e) {
   if (e.key !== 'Enter') return;
+  if (e.ctrlKey || e.metaKey) return;
   e.preventDefault();
   const ta = e.target;
   const start = ta.selectionStart;
