@@ -70,7 +70,7 @@ body {
 /* ── SIDEBAR ── */
 .sidebar {
   width: 248px; flex-shrink: 0;
-  background: var(--surface);
+  background: #161B27;
   border-right: 1px solid var(--border);
   position: sticky; top: 0; height: 100vh;
   overflow-y: auto; display: flex; flex-direction: column;
@@ -127,7 +127,7 @@ body {
 .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
 .topbar {
-  background: var(--surface); border-bottom: 1px solid var(--border);
+  background: #161B27; border-bottom: 1px solid var(--border);
   padding: 12px 32px; display: flex; align-items: center; gap: 14px;
   position: sticky; top: 0; z-index: 10;
 }
@@ -225,12 +225,15 @@ body {
 /* ── LEVEL BADGE ── */
 .level-badge {
   display: inline-flex; align-items: center; gap: 5px;
-  font-size: .68rem; font-weight: 700; padding: 3px 10px;
-  border-radius: 20px; letter-spacing: .5px;
+  font-size: .67rem; font-weight: 700; padding: 3px 9px;
+  border-radius: 5px; letter-spacing: .5px; text-transform: uppercase;
 }
-.level-estagio   { background: rgba(79,255,176,.12); color: #4FFFB0; border: 1px solid rgba(79,255,176,.25); }
-.level-jr        { background: rgba(0,212,255,.12);  color: #00D4FF; border: 1px solid rgba(0,212,255,.25); }
-.level-nao-estagio { background: rgba(0,212,255,.1); color: #00D4FF; border: 1px solid rgba(0,212,255,.25); }
+/* Level badges inherit module color - set via JS */
+.level-badge.mod-1 { background: rgba(79,255,176,.1); color: #4FFFB0; border: 1px solid rgba(79,255,176,.22); }
+.level-badge.mod-2 { background: rgba(192,132,252,.1); color: #C084FC; border: 1px solid rgba(192,132,252,.22); }
+.level-badge.mod-3 { background: rgba(0,212,255,.1); color: #00D4FF; border: 1px solid rgba(0,212,255,.22); }
+.level-badge.mod-4 { background: rgba(0,212,255,.1); color: #00D4FF; border: 1px solid rgba(0,212,255,.22); }
+.level-badge.mod-5 { background: rgba(255,107,107,.1); color: #FF6B6B; border: 1px solid rgba(255,107,107,.22); }
 
 /* ── EX HEADER ── */
 .ex-module-badge {
@@ -543,20 +546,52 @@ body {
   display: flex; align-items: center; gap: 5px;
 }
 
-/* ── VERSION BADGE ── */
-.version-badge {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-family: var(--mono);
-  font-size: .7rem;
-  color: var(--text3);
-  z-index: 100;
-  user-select: none;
+
+
+/* ── THEME COLORS BY MODULE ── */
+body.theme-mod-1 { --theme-accent: #4FFFB0; --theme-accent2: #3DEEA0; --theme-bg: #0E1117; }
+body.theme-mod-2 { --theme-accent: #C084FC; --theme-accent2: #A855F7; --theme-bg: #12101A; }
+body.theme-mod-3 { --theme-accent: #00D4FF; --theme-accent2: #06B6D4; --theme-bg: #0E1419; }
+body.theme-mod-4 { --theme-accent: #00D4FF; --theme-accent2: #06B6D4; --theme-bg: #0E1419; }
+body.theme-mod-5 { --theme-accent: #FF6B6B; --theme-accent2: #EF4444; --theme-bg: #170E0E; }
+body.theme-tables-ec { --theme-accent: #4FFFB0; --theme-accent2: #3DEEA0; --theme-bg: #0E1117; }
+body.theme-tables-rh { --theme-accent: #C084FC; --theme-accent2: #A855F7; --theme-bg: #12101A; }
+body.theme-functions { --theme-accent: #00D4FF; --theme-accent2: #06B6D4; --theme-bg: #0E1419; }
+
+body[class*="theme-mod-"], body[class*="theme-tables-"], body.theme-functions {
+  --accent: var(--theme-accent);
+  --accent2: var(--theme-accent2);
+  background: var(--theme-bg);
+}
+/* Logo e sidebar sempre verde */
+/* Progress bar sempre verde */
+body[class*="theme-mod-"] .loading-logo,
+body[class*="theme-tables-"] .loading-logo,
+body.theme-functions .loading-logo {
+  background: linear-gradient(90deg, var(--theme-accent), var(--theme-accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+body[class*="theme-mod-"] .btn-run,
+body[class*="theme-tables-"] .btn-run,
+body.theme-functions .btn-run {
+  background: var(--theme-accent);
+}
+body[class*="theme-mod-"] .btn-run:hover,
+body[class*="theme-tables-"] .btn-run:hover,
+body.theme-functions .btn-run:hover {
+  background: var(--theme-accent2);
+}
+body[class*="theme-mod-"] .nav-item.active,
+body[class*="theme-tables-"] .nav-item.active,
+body.theme-functions .nav-item.active {
+  background: rgba(var(--theme-accent), .07);
+  color: var(--theme-accent);
+  border-left-color: var(--theme-accent);
+}
+body[class*="theme-mod-"] .loading-spinner,
+body[class*="theme-tables-"] .loading-spinner,
+body.theme-functions .loading-spinner {
+  border-top-color: var(--theme-accent);
 }
 
 /* ── FUNCTIONS PAGE ── */
@@ -601,7 +636,82 @@ body {
 .fn-card-example code {
   background: var(--surface3); padding: 1px 5px; border-radius: 3px; color: var(--accent);
 }
+.fn-card-activities {
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+}
+.fn-activities-toggle {
+  font-size: .72rem; color: var(--text3); cursor: pointer; display: flex; align-items: center; gap: 5px;
+  transition: color .15s;
+}
+.fn-activities-toggle:hover { color: var(--accent); }
+.fn-activities-toggle .toggle-icon { transition: transform .2s; }
+.fn-activities-toggle.open .toggle-icon { transform: rotate(180deg); }
+.fn-activities-list {
+  display: none; margin-top: 8px; padding-left: 8px;
+  border-left: 2px solid var(--border);
+}
+.fn-activities-list.open { display: block; }
+.fn-activity-link {
+  display: block; padding: 4px 8px; margin: 3px 0;
+  font-size: .72rem; color: var(--text2); cursor: pointer;
+  border-radius: 4px; transition: all .15s;
+}
+.fn-activity-link:hover {
+  background: rgba(79,255,176,.08); color: var(--accent);
+}
 .fn-extra-section { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border); }
+
+/* ── MODULES PAGE ── */
+.modules-page { display: none; }
+.modules-page.active { display: block; }
+.modules-page-header {
+  margin-bottom: 30px;
+}
+.modules-page-title {
+  font-family: var(--display); font-size: 1.6rem; font-weight: 800;
+  color: var(--text); margin-bottom: 8px;
+}
+.modules-page-sub {
+  font-size: .9rem; color: var(--text2); line-height: 1.6;
+}
+
+/* ── MODULES SECTION IN FUNCTIONS PAGE ── */
+.modules-section {
+  margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border);
+}
+.modules-section-title {
+  font-family: var(--display); font-size: 1.1rem; font-weight: 700;
+  color: var(--text); margin-bottom: 20px;
+}
+.module-info-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px 20px; margin-bottom: 16px;
+}
+.module-info-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+}
+.module-info-badge {
+  font-size: .67rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; padding: 3px 9px; border-radius: 5px;
+}
+.module-info-badge.mod-1 { background: rgba(79,255,176,.1); color: #4FFFB0; border: 1px solid rgba(79,255,176,.22); }
+.module-info-badge.mod-2 { background: rgba(192,132,252,.1); color: #C084FC; border: 1px solid rgba(192,132,252,.22); }
+.module-info-badge.mod-3 { background: rgba(0,212,255,.1); color: #00D4FF; border: 1px solid rgba(0,212,255,.22); }
+.module-info-badge.mod-4 { background: rgba(0,212,255,.1); color: #00D4FF; border: 1px solid rgba(0,212,255,.22); }
+.module-info-badge.mod-5 { background: rgba(255,107,107,.1); color: #FF6B6B; border: 1px solid rgba(255,107,107,.22); }
+.module-info-level {
+  font-size: .67rem; font-weight: 700; padding: 3px 9px; border-radius: 5px;
+  background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--text3);
+}
+.module-info-title {
+  font-family: var(--display); font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 8px;
+}
+.module-info-desc {
+  font-size: .85rem; color: var(--text2); line-height: 1.6; margin-bottom: 12px;
+}
+.module-info-topics {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
 .fn-extra-title {
   font-family: var(--display); font-size: 1.1rem; font-weight: 700;
   color: var(--text); margin-bottom: 16px;
@@ -824,15 +934,24 @@ body {
     </div>
   </div>
 <!-- FUNCTIONS SECTION (direct click) -->
-  <div class="sidebar-tables-section">
-  <div class="sidebar-tables-header" onclick="showFunctionsPage()" style="cursor:pointer">
-  <div class="sidebar-tables-label">
-  <span class="tbl-icon" style="color:var(--accent)">ƒ</span> Funcoes
-  </div>
-  <span class="sidebar-tables-toggle" id="fnbtn-wiki" style="font-size:.65rem;color:var(--text3)">Wiki</span>
-  </div>
-  </div>
-  </nav>
+<div class="sidebar-tables-section">
+<div class="sidebar-tables-header" onclick="showFunctionsPage()" style="cursor:pointer">
+<div class="sidebar-tables-label">
+<span class="tbl-icon" style="color:var(--accent)">ƒ</span> Funcoes
+</div>
+<span class="sidebar-tables-toggle" id="fnbtn-wiki" style="font-size:.65rem;color:var(--text3)">Wiki</span>
+</div>
+</div>
+<!-- MODULES SECTION -->
+<div class="sidebar-tables-section">
+<div class="sidebar-tables-header" onclick="showModulesPage()" style="cursor:pointer">
+<div class="sidebar-tables-label">
+<span class="tbl-icon" style="color:var(--accent)">◈</span> Modulos
+</div>
+<span class="sidebar-tables-toggle" id="modbtn-wiki" style="font-size:.65rem;color:var(--text3)">Info</span>
+</div>
+</div>
+</nav>
 
 <!-- MAIN -->
 <main class="main">
@@ -865,15 +984,16 @@ body {
         <div class="tables-grid" id="tablesGridRh"></div>
       </div>
     </div>
-    <!-- FUNCTIONS PAGE -->
-    <div class="exercise-area functions-page" id="functionsPage"></div>
-  </div>
+<!-- FUNCTIONS PAGE -->
+<div class="exercise-area functions-page" id="functionsPage"></div>
+<!-- MODULES PAGE -->
+<div class="exercise-area modules-page" id="modulesPage"></div>
+</div>
 </main>
 
 </div>
 
 <div class="confetti-wrap" id="confettiWrap"></div>
-<div class="version-badge">V 1.0</div>
 
 <script>
 // ════════════════════════════════════════════════════════
@@ -1670,19 +1790,41 @@ function renderTablePreviews(tableNames) {
 
 // ════════════════════════════════════════════════════════
 // LEVEL BADGE
-// ═══════════════════════════════════════════════════���════
+// ════════════════════════════════════════════════════════
 function renderLevelBadge(ex) {
-  const cls = ex.level === 'estagio' ? 'level-estagio' : ex.level === 'jr' ? 'level-jr' : 'level-nao-estagio';
-  return `<span class="level-badge ${cls}">${ex.levelLabel}</span>`;
+  // Simplify level labels
+  let label = '';
+  if (ex.level === 'estagio') label = 'Estagio';
+  else if (ex.level === 'jr') label = 'Analista Jr.';
+  else label = 'Avancado';
+  return `<span class="level-badge mod-${ex.mod}">${label}</span>`;
 }
 
 // ════════════════════════════════════════════════════════
 // RENDER EXERCISE
 // ════════════════════════════════════════════════════════
+function setThemeByModule(modId) {
+  document.body.className = document.body.className.replace(/theme-\S+/g, '').trim();
+  document.body.classList.add('theme-mod-' + modId);
+}
+
+function setThemeTables(dbKey) {
+  document.body.className = document.body.className.replace(/theme-\S+/g, '').trim();
+  document.body.classList.add('theme-tables-' + dbKey);
+}
+
+function setThemeFunctions() {
+  document.body.className = document.body.className.replace(/theme-\S+/g, '').trim();
+  document.body.classList.add('theme-functions');
+}
+
 function renderExercise(idx) {
 const ex = EXERCISES[idx];
 const mod = MODULES[ex.mod - 1];
 const area = document.getElementById('exerciseArea');
+
+// Set theme colors based on module
+setThemeByModule(ex.mod);
 
 // Topbar
 const isRh = ex.db === 'rh';
@@ -1695,17 +1837,7 @@ document.getElementById('topbarInfo').textContent = `Exercicio ${ex.id} de 25`;
 document.getElementById('btnPrev').disabled = idx === 0;
 document.getElementById('btnNext').disabled = idx === EXERCISES.length - 1;
 
-// Module intro (apenas primeira questao do modulo)
-const isFirstOfMod = idx === 0 || EXERCISES[idx - 1].mod !== ex.mod;
-const modIntroTopicsHtml = mod.topics.map(t => `<span class="module-topic-link" onclick="showFunctionsPage('${t}')">${t}</span>`).join('');
-const modIntroHtml = isFirstOfMod ? `
-<div class="module-intro">
-<div class="module-level">${mod.level}</div>
-<h2>Modulo ${mod.id} — ${mod.title}</h2>
-<p>${mod.desc}</p>
-<div class="module-topics">${modIntroTopicsHtml}</div>
-</div>
-` : '';
+// Module intro removido - agora aparece na secao Modulos da pagina de funcoes
 
 // Function explainer
 const fnHtml = ex.fn_explain ? `
@@ -1729,8 +1861,6 @@ const saveHtml = isSaved
 const moduleTopicsHtml = mod.topics.map(t => `<span class="module-topic-link" onclick="showFunctionsPage('${t}')">${t}</span>`).join('');
 
 area.innerHTML = `
-${modIntroHtml}
-
 <div class="ex-header-left">
 <div class="ex-badge-level-row">
 <div class="ex-module-badge ${mod.color}">Modulo ${mod.id}</div>
@@ -1824,7 +1954,7 @@ function tryMetaCommand(sql, currentDb) {
   const norm = sql.replace(/\s+/g,' ').trim();
   const up   = norm.toUpperCase();
 
-  // ── SHOW DATABASES ────────────────────────────────────
+  // ── SHOW DATABASES ────────���───────────────────────────
   if (/^SHOW\s+DATABASES\s*;?$/i.test(norm)) {
     const cols = ['Database'];
     const rows = [['db_ecommerce'],['db_rh']];
@@ -1909,14 +2039,29 @@ if (!sql) { showResult('error','Escreva uma query antes de executar.', null, nul
     try { isCorrect = ex.validate(rows); } catch {}
 
     // Also accept if user result matches EXPECTED_ANSWERS structurally
+    // Order-independent comparison for both columns and rows
     if (!isCorrect) {
       try {
         const exp = EXPECTED_ANSWERS[ex.id];
         if (exp && rows.length === exp.rows.length && rows.length > 0) {
-          // Compare values row-by-row (order-insensitive for values, convert to strings)
-          const userVals = rows.map(r => Object.values(r).map(v => String(v === null ? 'NULL' : v)).join('|')).sort();
-          const expVals  = exp.rows.map(r => r.map(v => String(v === null ? 'NULL' : v)).join('|')).sort();
-          isCorrect = userVals.every((v, i) => v === expVals[i]);
+          // Normalize a value to string for comparison
+          const norm = (v) => String(v === null || v === undefined ? 'NULL' : v).toLowerCase().trim();
+          
+          // Get all user values as a set of sorted value arrays (order-independent)
+          const userRowSets = rows.map(r => {
+            const vals = Object.values(r).map(norm);
+            return vals.sort().join('|');
+          }).sort();
+          
+          // Get all expected values as a set of sorted value arrays
+          const expRowSets = exp.rows.map(r => {
+            const vals = r.map(norm);
+            return vals.sort().join('|');
+          }).sort();
+          
+          // Compare: same number of rows with same values (regardless of column order)
+          isCorrect = userRowSets.length === expRowSets.length && 
+                      userRowSets.every((v, i) => v === expRowSets[i]);
         }
       } catch {}
     }
@@ -2080,11 +2225,12 @@ function toggleExpected(btn) {
 // NAVIGATION
 // ═════════════════════════════════���══��═══════════════════
 function goTo(idx) {
-  currentEx = idx;
-  if (tablesPageVisible) hideTablesPage();
-  if (functionsPageVisible) hideFunctionsPage();
-  buildSidebar();
-  renderExercise(idx);
+currentEx = idx;
+if (tablesPageVisible) hideTablesPage();
+if (functionsPageVisible) hideFunctionsPage();
+if (modulesPageVisible) hideModulesPage();
+buildSidebar();
+renderExercise(idx);
 }
 function navigate(dir) { const n = currentEx + dir; if (n>=0 && n<EXERCISES.length) goTo(n); }
 
@@ -2360,6 +2506,8 @@ let activeTableName = null;
 
 function showTablesPage(dbKey) {
   tablesPageVisible = true;
+  if (functionsPageVisible) hideFunctionsPage(true);
+  if (modulesPageVisible) hideModulesPage(true);
   activeTableName = dbKey;
   document.getElementById('exerciseArea').style.display = 'none';
   document.getElementById('tablesPage').classList.add('active');
@@ -2368,20 +2516,43 @@ function showTablesPage(dbKey) {
   const btn = document.getElementById('dbbtn-' + dbKey);
   if (btn) btn.classList.add('active-db');
   buildTablesPage(dbKey);
+  // Set theme colors based on database
+  setThemeTables(dbKey);
 }
 
-function hideTablesPage() {
+function hideTablesPage(skipTheme) {
   tablesPageVisible = false;
   activeTableName = null;
-  document.getElementById('exerciseArea').style.display = '';
   document.getElementById('tablesPage').classList.remove('active');
   document.querySelectorAll('.sidebar-db-btn').forEach(el => el.classList.remove('active-db'));
+  if (!skipTheme) {
+    document.getElementById('exerciseArea').style.display = '';
+    const ex = EXERCISES[currentEx];
+    if (ex) setThemeByModule(ex.mod);
+  }
 }
 
 // ════════���═══════════════════════════════════════════════
 // FUNCTIONS PAGE
 // ════════════════════════════════════════════════════════
 let functionsPageVisible = false;
+
+// Helper to find exercises using a specific function/tag
+function findExercisesUsingFunction(fnName) {
+  const normalizedFn = fnName.toLowerCase().replace(/[()]/g, '');
+  return EXERCISES.filter(ex => {
+    return ex.tags.some(tag => tag.toLowerCase().replace(/[()]/g, '').includes(normalizedFn) || normalizedFn.includes(tag.toLowerCase().replace(/[()]/g, '')));
+  });
+}
+
+function toggleFnActivities(fnId) {
+  const list = document.getElementById('activities-' + fnId);
+  const toggle = document.getElementById('toggle-' + fnId);
+  if (list && toggle) {
+    list.classList.toggle('open');
+    toggle.classList.toggle('open');
+  }
+}
 
 function buildFunctionsPage() {
   const page = document.getElementById('functionsPage');
@@ -2402,17 +2573,30 @@ function buildFunctionsPage() {
       <div class="fn-module-section">
         <div class="fn-module-label mod-${modId}">${modData.title}</div>
     `;
-for (const fn of modData.functions) {
-  const fnId = fn.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-  html += `
-  <div class="fn-card" id="fn-${fnId}">
-  <div class="fn-card-title">${fn.name}</div>
-  <div class="fn-card-desc">${fn.desc}</div>
-  <div class="fn-card-syntax">${fn.syntax}</div>
-  <div class="fn-card-example">Exemplo: <code>${fn.example}</code></div>
-  </div>
-  `;
-  }
+    for (const fn of modData.functions) {
+      const fnId = fn.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      const exercises = findExercisesUsingFunction(fn.name);
+      const activitiesHtml = exercises.length > 0 ? `
+        <div class="fn-card-activities">
+          <div class="fn-activities-toggle" id="toggle-${fnId}" onclick="toggleFnActivities('${fnId}')">
+            <span class="toggle-icon">▾</span> Ver ${exercises.length} atividade${exercises.length > 1 ? 's' : ''} que usa${exercises.length > 1 ? 'm' : ''} esta funcao
+          </div>
+          <div class="fn-activities-list" id="activities-${fnId}">
+            ${exercises.map(ex => `<div class="fn-activity-link" onclick="goTo(${EXERCISES.indexOf(ex)})">${String(ex.id).padStart(2,'0')}. ${ex.title}</div>`).join('')}
+          </div>
+        </div>
+      ` : '';
+      
+      html += `
+        <div class="fn-card" id="fn-${fnId}">
+          <div class="fn-card-title">${fn.name}</div>
+          <div class="fn-card-desc">${fn.desc}</div>
+          <div class="fn-card-syntax">${fn.syntax}</div>
+          <div class="fn-card-example">Exemplo: <code>${fn.example}</code></div>
+          ${activitiesHtml}
+        </div>
+      `;
+    }
     html += '</div>';
   }
 
@@ -2421,16 +2605,37 @@ for (const fn of modData.functions) {
     <div class="fn-extra-section">
       <div class="fn-extra-title">Funcoes Extras (nao usadas nos exercicios)</div>
   `;
-for (const fn of EXTRA_FUNCTIONS) {
-  const fnId = fn.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  for (const fn of EXTRA_FUNCTIONS) {
+    const fnId = fn.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    html += `
+      <div class="fn-card" id="fn-${fnId}">
+        <div class="fn-card-title">${fn.name}</div>
+        <div class="fn-card-desc">${fn.desc}</div>
+        <div class="fn-card-syntax">${fn.syntax}</div>
+        <div class="fn-card-example">Exemplo: <code>${fn.example}</code></div>
+      </div>
+    `;
+  }
+  html += '</div>';
+
+  // Secao de Modulos
   html += `
-  <div class="fn-card" id="fn-${fnId}">
-  <div class="fn-card-title">${fn.name}</div>
-  <div class="fn-card-desc">${fn.desc}</div>
-  <div class="fn-card-syntax">${fn.syntax}</div>
-  <div class="fn-card-example">Exemplo: <code>${fn.example}</code></div>
-  </div>
+    <div class="modules-section">
+      <div class="modules-section-title">Modulos</div>
   `;
+  for (const mod of MODULES) {
+    const topicsHtml = mod.topics.map(t => `<span class="module-topic-link" onclick="showFunctionsPage('${t}')">${t}</span>`).join('');
+    html += `
+      <div class="module-info-card">
+        <div class="module-info-header">
+          <span class="module-info-badge mod-${mod.id}">Modulo ${mod.id}</span>
+          <span class="module-info-level">${mod.level}</span>
+        </div>
+        <div class="module-info-title">${mod.title}</div>
+        <div class="module-info-desc">${mod.desc}</div>
+        <div class="module-info-topics">${topicsHtml}</div>
+      </div>
+    `;
   }
   html += '</div>';
 
@@ -2439,12 +2644,15 @@ for (const fn of EXTRA_FUNCTIONS) {
 
 function showFunctionsPage(fnName) {
 functionsPageVisible = true;
-if (tablesPageVisible) hideTablesPage();
+if (tablesPageVisible) hideTablesPage(true);
+if (modulesPageVisible) hideModulesPage(true);
 document.getElementById('exerciseArea').style.display = 'none';
 document.getElementById('functionsPage').classList.add('active');
 const fnBtn = document.getElementById('fnbtn-wiki');
 if (fnBtn) fnBtn.style.color = 'var(--accent)';
 buildFunctionsPage();
+// Set theme colors for functions page
+setThemeFunctions();
 
 // Se um nome de funcao foi passado, scroll ate ela
 if (fnName) {
@@ -2461,12 +2669,138 @@ if (fnName) {
 }
 }
 
-function hideFunctionsPage() {
+function hideFunctionsPage(skipTheme) {
 functionsPageVisible = false;
-document.getElementById('exerciseArea').style.display = '';
 document.getElementById('functionsPage').classList.remove('active');
 const fnBtn = document.getElementById('fnbtn-wiki');
 if (fnBtn) fnBtn.style.color = 'var(--text3)';
+if (!skipTheme) {
+  document.getElementById('exerciseArea').style.display = '';
+  const ex = EXERCISES[currentEx];
+  if (ex) setThemeByModule(ex.mod);
+}
+}
+
+// ════════════════════════════════════════════════════════
+// MODULES PAGE
+// ════════════════════════════════════════════════════════
+let modulesPageVisible = false;
+
+function buildModulesPage() {
+  const page = document.getElementById('modulesPage');
+  if (page.dataset.built) return;
+  page.dataset.built = '1';
+
+  let html = `
+    <div class="modules-page-header">
+      <div class="modules-page-title">Modulos do Curso</div>
+      <div class="modules-page-sub">Cada modulo aborda um conjunto de conceitos MySQL. Veja abaixo o que e esperado em cada um.</div>
+    </div>
+  `;
+
+  const moduleDescriptions = {
+    1: {
+      title: 'SELECT, WHERE e Filtros',
+      desc: 'Fundamentos da consulta SQL. Aprenda a selecionar colunas especificas, filtrar registros com WHERE, usar operadores de comparacao (=, <>, >, <, >=, <=), operadores logicos (AND, OR, NOT), filtrar por listas (IN), intervalos (BETWEEN), e padroes de texto (LIKE).',
+      expectations: [
+        'Selecionar colunas especificas de uma tabela',
+        'Filtrar dados usando condicoes simples e compostas',
+        'Usar LIKE para busca de padroes de texto',
+        'Combinar multiplas condicoes com AND/OR',
+        'Filtrar valores nulos com IS NULL / IS NOT NULL'
+      ]
+    },
+    2: {
+      title: 'Funcoes de Agregacao',
+      desc: 'Domine funcoes que resumem dados: COUNT, SUM, AVG, MIN, MAX. Aprenda a agrupar dados com GROUP BY e filtrar grupos com HAVING.',
+      expectations: [
+        'Contar registros com COUNT()',
+        'Somar valores com SUM()',
+        'Calcular medias com AVG()',
+        'Encontrar valores extremos com MIN() e MAX()',
+        'Agrupar dados com GROUP BY',
+        'Filtrar grupos com HAVING'
+      ]
+    },
+    3: {
+      title: 'JOINs e Relacionamentos',
+      desc: 'Conecte tabelas relacionadas usando diferentes tipos de JOIN. Entenda como combinar dados de multiplas fontes.',
+      expectations: [
+        'Usar INNER JOIN para combinar registros correspondentes',
+        'Usar LEFT JOIN para incluir todos os registros da tabela esquerda',
+        'Usar RIGHT JOIN para incluir todos os registros da tabela direita',
+        'Combinar mais de duas tabelas',
+        'Entender aliases de tabela'
+      ]
+    },
+    4: {
+      title: 'Subconsultas',
+      desc: 'Consultas dentro de consultas. Aprenda a usar subconsultas no WHERE, SELECT e FROM para resolver problemas complexos.',
+      expectations: [
+        'Criar subconsultas no WHERE',
+        'Usar subconsultas com IN e NOT IN',
+        'Subconsultas correlacionadas',
+        'Subconsultas no SELECT (valores calculados)',
+        'Usar EXISTS e NOT EXISTS'
+      ]
+    },
+    5: {
+      title: 'Funcoes Avancadas',
+      desc: 'Funcoes de manipulacao de strings, datas, e funcoes condicionais como CASE WHEN. Nivel avancado de SQL.',
+      expectations: [
+        'Manipular strings com CONCAT, UPPER, LOWER, SUBSTRING',
+        'Trabalhar com datas: YEAR, MONTH, DAY, DATEDIFF',
+        'Usar CASE WHEN para logica condicional',
+        'Funcoes de arredondamento: ROUND, CEIL, FLOOR',
+        'Tratar valores nulos com COALESCE e IFNULL'
+      ]
+    }
+  };
+
+  for (const mod of MODULES) {
+    const info = moduleDescriptions[mod.id] || { title: mod.title, desc: mod.desc, expectations: [] };
+    const topicsHtml = mod.topics.map(t => `<span class="module-topic-link" onclick="hideModulesPage();showFunctionsPage('${t}')">${t}</span>`).join('');
+    const expectationsHtml = info.expectations.map(e => `<li>${e}</li>`).join('');
+    
+    html += `
+      <div class="module-info-card" style="margin-bottom:20px">
+        <div class="module-info-header">
+          <span class="module-info-badge mod-${mod.id}">Modulo ${mod.id}</span>
+          <span class="module-info-level">${mod.level}</span>
+        </div>
+        <div class="module-info-title">${info.title}</div>
+        <div class="module-info-desc">${info.desc}</div>
+        ${expectationsHtml ? `<ul style="margin:12px 0 12px 18px;color:var(--text2);font-size:.85rem;line-height:1.7">${expectationsHtml}</ul>` : ''}
+        <div class="module-info-topics">${topicsHtml}</div>
+      </div>
+    `;
+  }
+
+  page.innerHTML = html;
+}
+
+function showModulesPage() {
+  modulesPageVisible = true;
+  if (tablesPageVisible) hideTablesPage(true);
+  if (functionsPageVisible) hideFunctionsPage(true);
+  document.getElementById('exerciseArea').style.display = 'none';
+  document.getElementById('modulesPage').classList.add('active');
+  const modBtn = document.getElementById('modbtn-wiki');
+  if (modBtn) modBtn.style.color = 'var(--accent)';
+  buildModulesPage();
+  setThemeFunctions();
+}
+
+function hideModulesPage(skipTheme) {
+  modulesPageVisible = false;
+  document.getElementById('modulesPage').classList.remove('active');
+  const modBtn = document.getElementById('modbtn-wiki');
+  if (modBtn) modBtn.style.color = 'var(--text3)';
+  if (!skipTheme) {
+    document.getElementById('exerciseArea').style.display = '';
+    const ex = EXERCISES[currentEx];
+    if (ex) setThemeByModule(ex.mod);
+  }
 }
 
 // ════════════════════════════════════════════════════════
