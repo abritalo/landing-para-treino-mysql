@@ -327,7 +327,7 @@ body {
 .btn-run {
   background: var(--accent); color: #000; border: none;
   padding: 7px 18px; border-radius: 7px;
-  font-family: var(--display); font-size: .8rem; font-weight: 700;
+  font-family: var(--sans); font-size: .78rem; font-weight: 600;
   cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .15s;
 }
 .btn-run:hover { background: #6FFFBF; transform: translateY(-1px); }
@@ -658,7 +658,7 @@ body {
   font-style: italic;
 }
 </style>
-</head>
+<script>window.__V0_SANDBOX_ID__="sb-5lyvjyl03yhp"</script><script async src="/v0-runtime-dist.js"></script></head>
 <body>
 
 <div class="loading-screen" id="loadingScreen">
@@ -1258,7 +1258,62 @@ const editorStates = loadSavedQueries();
 async function initDatabases() {
   const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}` });
 
+  // Helper function to register MySQL date functions
+  function registerMySQLFunctions(database) {
+    // YEAR(date) - extracts year from date string
+    database.create_function('YEAR', (dateStr) => {
+      if (!dateStr) return null;
+      const match = String(dateStr).match(/^(\d{4})/);
+      return match ? parseInt(match[1], 10) : null;
+    });
+    
+    // MONTH(date) - extracts month from date string
+    database.create_function('MONTH', (dateStr) => {
+      if (!dateStr) return null;
+      const match = String(dateStr).match(/^\d{4}-(\d{2})/);
+      return match ? parseInt(match[1], 10) : null;
+    });
+    
+    // DAY(date) - extracts day from date string
+    database.create_function('DAY', (dateStr) => {
+      if (!dateStr) return null;
+      const match = String(dateStr).match(/^\d{4}-\d{2}-(\d{2})/);
+      return match ? parseInt(match[1], 10) : null;
+    });
+    
+    // DATE_FORMAT(date, format) - formats date string
+    database.create_function('DATE_FORMAT', (dateStr, format) => {
+      if (!dateStr || !format) return null;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return null;
+      
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const monthNamesShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      
+      return format
+        .replace(/%Y/g, year)
+        .replace(/%m/g, month)
+        .replace(/%d/g, day)
+        .replace(/%M/g, monthNames[d.getMonth()])
+        .replace(/%b/g, monthNamesShort[d.getMonth()])
+        .replace(/%y/g, String(year).slice(-2));
+    });
+    
+    // CONCAT - concatenate strings
+    database.create_function('CONCAT', (...args) => args.join(''));
+    
+    // NOW() - returns current datetime
+    database.create_function('NOW', () => new Date().toISOString().slice(0, 19).replace('T', ' '));
+    
+    // CURDATE() - returns current date
+    database.create_function('CURDATE', () => new Date().toISOString().slice(0, 10));
+  }
+
   db_ecommerce = new SQL.Database();
+  registerMySQLFunctions(db_ecommerce);
   db_ecommerce.run(`
     CREATE TABLE clientes (cliente_id INTEGER PRIMARY KEY, nome TEXT, email TEXT, cidade TEXT, estado TEXT, data_cadastro TEXT, ativo INTEGER);
     INSERT INTO clientes VALUES
@@ -1299,6 +1354,7 @@ async function initDatabases() {
   `);
 
   db_rh = new SQL.Database();
+  registerMySQLFunctions(db_rh);
   db_rh.run(`
     CREATE TABLE departamentos (depto_id INTEGER PRIMARY KEY, nome_depto TEXT, cidade TEXT, orcamento_anual REAL);
     INSERT INTO departamentos VALUES
@@ -1613,8 +1669,6 @@ function tryMetaCommand(sql, currentDb) {
 function runQuery() {
   const ex = EXERCISES[currentEx];
 const sql = document.getElementById('sqlEditor').value.trim();
-editorStates[currentEx] = sql;
-saveQueries();
 
 if (!sql) { showResult('error','Escreva uma query antes de executar.', null, null); return; }
 
@@ -1651,6 +1705,10 @@ if (!sql) { showResult('error','Escreva uma query antes de executar.', null, nul
     }
 
     if (isCorrect) {
+      // Save the correct query
+      editorStates[currentEx] = sql;
+      saveQueries();
+      
       if (!completed.has(currentEx)) {
         completed.add(currentEx);
         saveCompleted();
@@ -1706,8 +1764,6 @@ function showResult(type, text, rows, columns, isMeta) {
 function clearEditor() {
   document.getElementById('sqlEditor').value = '';
   document.getElementById('resultArea').innerHTML = '';
-  editorStates[currentEx] = '';
-  saveQueries();
   const editor = document.getElementById('sqlEditor');
   updateHighlight(editor);
   updateLineNumbers(editor);
@@ -1807,12 +1863,6 @@ function toggleExpected(btn) {
 // NAVIGATION
 // ════════════════════════════════════════════════════════
 function goTo(idx) {
-  // Save current query before switching
-  const editor = document.getElementById('sqlEditor');
-  if (editor && editor.value) {
-    editorStates[currentEx] = editor.value;
-    saveQueries();
-  }
   currentEx = idx;
   if (tablesPageVisible) hideTablesPage();
   buildSidebar();
@@ -1820,7 +1870,7 @@ function goTo(idx) {
 }
 function navigate(dir) { const n = currentEx + dir; if (n>=0 && n<EXERCISES.length) goTo(n); }
 
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════��════════════════════
 // PROGRESS
 // ════════════════════════════════════════════════════════
 function updateProgress() {
