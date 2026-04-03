@@ -2,909 +2,999 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>KOReader Remote</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Exercícios MySQL — Analista de Dados Jr.</title>
 <style>
-  :root {
-    --bg: #0f0e0c;
-    --surface: #1a1916;
-    --surface2: #232220;
-    --surface3: #2a2926;
-    --border: #2e2d2a;
-    --border2: #3d3c38;
-    --text: #e8e4db;
-    --text2: #8a8680;
-    --text3: #56544f;
-    --accent: #c9a96e;
-    --accent2: #8b6b3a;
-    --ok: #5e9e6b;
-    --err: #b85e5e;
-    --warn: #c49a4a;
-  }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  html { height: 100%; font-size: 100%; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+    background: #F0F4F8;
+    color: #1A202C;
+    line-height: 1.7;
+  }
+
+  .cover {
+    background: linear-gradient(135deg, #1F3864 0%, #2D6A4F 100%);
+    color: #fff;
+    padding: 60px 80px;
+    min-height: 220px;
     position: relative;
-    overflow-x: hidden;
+    overflow: hidden;
   }
-
-  body::before {
+  .cover::after {
     content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 70% 40% at 50% -5%, rgba(201,169,110,0.07) 0%, transparent 65%),
-      radial-gradient(ellipse 40% 30% at 85% 90%, rgba(201,169,110,0.03) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .cover h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 1.1rem; opacity: .85; margin-bottom: 20px; }
+  .badge-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+  .badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: .8rem;
+    font-weight: 500;
   }
 
-  /* ── TOP BAR ── */
-  .topbar {
+  .content { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+  /* ── Instrução de banco ─────────────────────────────────────── */
+  .db-block {
+    background: #fff;
+    border-left: 5px solid #1F3864;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .db-block h2 { color: #1F3864; font-size: 1.1rem; margin-bottom: 14px; }
+  .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .table-card {
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .table-card h3 { font-size: .85rem; color: #2D6A4F; font-weight: 700; margin-bottom: 8px; letter-spacing:.5px; text-transform: uppercase; }
+  .table-card ul { list-style: none; }
+  .table-card li { font-family: 'Fira Code', monospace; font-size: .8rem; color: #4A5568; padding: 2px 0; }
+  .table-card li .type { color: #718096; font-size: .75rem; }
+  .table-card li .pk { color: #E07B39; font-weight: 600; }
+  .table-card li .fk { color: #805AD5; }
+
+  /* ── Módulos / Seções ───────────────────────────────────────── */
+  .section-title {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--border);
-    position: relative;
-    z-index: 10;
+    gap: 12px;
+    margin: 36px 0 18px;
+  }
+  .section-title .icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
     flex-shrink: 0;
   }
-  .topbar-left { display: flex; align-items: center; gap: 8px; }
-  .kindle-icon {
-    width: 20px; height: 26px;
-    border: 1.5px solid var(--border2); border-radius: 3px;
-    position: relative; flex-shrink: 0; background: var(--surface2);
+  .section-title h2 { font-size: 1.2rem; font-weight: 700; }
+  .section-title .nivel {
+    margin-left: auto;
+    font-size: .75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
   }
-  .kindle-icon::before {
-    content: ''; position: absolute;
-    top: 3px; left: 3px; right: 3px; bottom: 7px;
-    border: 1px solid var(--border2); border-radius: 2px;
-  }
-  .kindle-icon::after {
-    content: ''; position: absolute;
-    bottom: 2px; left: 50%; transform: translateX(-50%);
-    width: 6px; height: 2px; border-radius: 2px; background: var(--border2);
-  }
-  .topbar h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1rem; font-weight: 400; color: var(--text); letter-spacing: -0.2px;
-  }
-  .topbar h1 em { font-style: italic; color: var(--accent); }
-  .topbar-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .nivel-basico  { background: #C6F6D5; color: #276749; }
+  .nivel-medio   { background: #FEFCBF; color: #744210; }
+  .nivel-avancado{ background: #FED7D7; color: #822727; }
 
-  .conn-badge {
-    display: flex; align-items: center; gap: 5px;
-    font-size: 0.75rem; color: var(--text3); letter-spacing: 0.04em;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 20px; padding: 3px 10px 3px 7px; transition: border-color 0.3s;
+  /* ── Cartão de exercício ────────────────────────────────────── */
+  .exercise {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: 1px solid #E2E8F0;
   }
-  .conn-badge.ok  { border-color: rgba(94,158,107,0.35); }
-  .conn-badge.err { border-color: rgba(184,94,94,0.35); }
-  .conn-badge .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--border2); flex-shrink: 0; transition: background 0.3s;
+  .ex-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #EDF2F7;
+    background: #FAFAFA;
   }
-  .conn-badge .dot.ok      { background: var(--ok); box-shadow: 0 0 5px rgba(94,158,107,0.5); }
-  .conn-badge .dot.err     { background: var(--err); }
-  .conn-badge .dot.loading { background: var(--warn); animation: blink 0.8s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  .topbar-btn {
-    background: transparent; border: 1px solid var(--border2); border-radius: 6px;
-    color: var(--text2); font-family: 'DM Mono', monospace;
-    font-size: 0.75rem; height: 28px; padding: 0 10px;
-    cursor: pointer; letter-spacing: 0.05em; transition: all 0.2s; white-space: nowrap;
-  }
-  .topbar-btn:hover { border-color: var(--accent2); color: var(--accent); background: rgba(201,169,110,0.05); }
-  .topbar-btn.help:hover { border-color: rgba(94,158,107,0.5); color: var(--ok); background: rgba(94,158,107,0.05); }
-
-  /* ── LAYOUT ── */
-  .app-body {
-    flex: 1; display: flex; flex-direction: row;
-    min-height: 0; position: relative; z-index: 1;
-  }
-
-  /* ── MAIN ── */
-  .main {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 1rem; gap: 0.75rem; min-height: 0; min-width: 0;
-  }
-
-  /* ── CONNECT BUTTON ── */
-  .connect-row { width: 100%; max-width: 500px; }
-  .btn-connect {
-    width: 100%; height: 44px;
-    background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px;
-    color: var(--text2); font-family: 'DM Mono', monospace;
-    font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    gap: 8px; transition: all 0.2s; position: relative; overflow: hidden;
-  }
-  .btn-connect::before {
-    content: ''; position: absolute; inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,169,110,0.07) 0%, transparent 70%);
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .btn-connect:hover { border-color: var(--accent2); color: var(--accent); }
-  .btn-connect:hover::before { opacity: 1; }
-  .btn-connect:active { transform: scale(0.99); }
-  .btn-connect.connecting { border-color: var(--warn); color: var(--warn); cursor: wait; }
-  .btn-connect.connected  { border-color: rgba(94,158,107,0.5); color: var(--ok); }
-  .btn-connect.failed     { border-color: rgba(184,94,94,0.4); color: var(--err); }
-  .btn-connect svg {
-    width: 14px; height: 14px; stroke: currentColor; fill: none;
-    stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;
-  }
-
-  /* ── PAGE BUTTONS ── */
-  .page-controls {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 10px; width: 100%; max-width: 500px;
-  }
-  .page-btn {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-    color: var(--text); cursor: pointer; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 6px;
-    padding: 1.6rem 1rem; transition: all 0.15s;
-    position: relative; overflow: hidden; font-family: 'DM Mono', monospace;
-    touch-action: manipulation;
-  }
-  .page-btn::after {
-    content: ''; position: absolute; inset: 0;
-    background: radial-gradient(circle at center, rgba(201,169,110,0.09) 0%, transparent 70%);
-    opacity: 0; transition: opacity 0.2s;
-  }
-  .page-btn:hover  { border-color: var(--accent2); background: rgba(201,169,110,0.03); }
-  .page-btn:hover::after { opacity: 1; }
-  .page-btn:active { transform: scale(0.97); }
-  .page-btn .arrow { font-family: 'DM Serif Display', serif; font-size: 2.8rem; line-height: 1; color: var(--accent); }
-  .page-btn .btn-label { font-size: 0.75rem; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
-  .page-btn .kbd { font-size: 0.75rem; color: var(--text3); background: var(--border); border-radius: 3px; padding: 2px 5px; }
-
-  @keyframes flash {
-    0%   { border-color: var(--accent2); box-shadow: 0 0 14px rgba(201,169,110,0.18); }
-    100% { border-color: var(--border);  box-shadow: none; }
-  }
-  .flash { animation: flash 0.45s ease-out; }
-
-  /* ── ACTION BUTTONS ── */
-  .action-row { display: flex; gap: 8px; width: 100%; max-width: 500px; }
-  .action-btn {
-    flex: 1; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; color: var(--text2); cursor: pointer;
-    display: flex; flex-direction: column; align-items: center;
-    gap: 5px; padding: 0.75rem 0.4rem; transition: all 0.15s;
-    font-family: 'DM Mono', monospace; touch-action: manipulation;
-  }
-  .action-btn:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
-  .action-btn:active { transform: scale(0.96); }
-  .action-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-  .action-btn span { font-size: 0.75rem; letter-spacing: 0.07em; text-transform: uppercase; text-align: center; line-height: 1.3; }
-
-  /* ── LOG ── */
-  .log-wrap {
-    width: 190px; flex-shrink: 0;
-    border-left: 1px solid var(--border); background: var(--surface);
-    display: flex; flex-direction: column; padding: 0.6rem 0.7rem; min-height: 0;
-  }
-  .log-label { font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; flex-shrink: 0; }
-  .log-box {
-    flex: 1; overflow-y: auto; font-size: 0.75rem; line-height: 1.9;
-    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-  }
-  .log-line { display: flex; gap: 5px; color: var(--text3); flex-wrap: wrap; margin-bottom: 1px; }
-  .log-line .t    { color: var(--text3); flex-shrink: 0; }
-  .log-line .ok   { color: var(--ok); word-break: break-word; }
-  .log-line .err  { color: var(--err); word-break: break-word; }
-  .log-line .warn { color: var(--warn); word-break: break-word; }
-
-  /* ── CORS WARN (oculto) ── */
-  .cors-warn, .cors-warn.visible { display: none; }
-
-  /* ── FOOTER ── */
-  .page-footer {
-    padding: 0.4rem 1rem; border-top: 1px solid var(--border);
-    font-size: 0.75rem; color: var(--text3); letter-spacing: 0.06em;
-    position: relative; z-index: 1; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .footer-gh {
-    color: var(--text3); text-decoration: none; letter-spacing: 0.06em;
-    font-size: 0.75rem; transition: color 0.2s;
-  }
-  .footer-gh:hover { color: var(--accent); }
-
-  /* ── MODAL BASE ── */
-  .overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.8); z-index: 200;
-    align-items: center; justify-content: center; padding: 1rem;
-  }
-  .overlay.open { display: flex; }
-  .modal {
-    background: var(--surface); border: 1px solid var(--border2); border-radius: 14px;
-    width: 100%; max-width: 400px; overflow: hidden; position: relative;
-    max-height: 90dvh; display: flex; flex-direction: column;
-  }
-  .modal::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent2), transparent);
-  }
-  .modal-body { padding: 1.25rem 1.25rem 0.75rem; overflow-y: auto; }
-  .modal-body h2 { font-family: 'DM Serif Display', serif; font-size: 1.1rem; font-weight: 400; color: var(--text); margin-bottom: 0.85rem; }
-  .steps { display: flex; flex-direction: column; }
-  .step { display: flex; gap: 10px; padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
-  .step:last-child { border-bottom: none; padding-bottom: 0; }
-  .step-num {
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--surface3); border: 1px solid var(--border2);
-    font-size: 0.75rem; color: var(--accent);
+  .ex-num {
+    width: 32px; height: 32px;
+    border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; margin-top: 1px; font-weight: 500;
+    font-weight: 700; font-size: .9rem;
+    flex-shrink: 0;
+    color: #fff;
   }
-  .step-content strong { display: block; font-size: 0.75rem; font-weight: 500; color: var(--text); line-height: 1.45; margin-bottom: 3px; }
-  .step-content p { font-size: 0.75rem; color: var(--text3); line-height: 1.6; }
-  .step-content .path { display: inline-block; font-size: 0.75rem; color: var(--text3); margin-top: 4px; padding: 3px 6px; background: var(--surface3); border-radius: 4px; line-height: 1.5; }
-  .modal-conn { padding: 0.85rem 1.25rem; background: var(--surface2); border-top: 1px solid var(--border); }
-  .modal-conn-label { font-size: 0.75rem; font-weight: 500; color: var(--text2); letter-spacing: 0.05em; margin-bottom: 7px; display: flex; align-items: center; gap: 5px; }
-  .ip-tip { position: static; display: inline-flex; align-items: center; color: var(--text3); cursor: default; }
-  .ip-tip svg { display: block; }
-  .ip-tip-bubble {
-    display: none; position: fixed; bottom: auto; left: auto;
-    background: var(--surface3); border: 1px solid var(--border2); border-radius: 8px;
-    color: var(--text2); font-size: 0.75rem; line-height: 1.7; white-space: normal;
-    width: 220px; padding: 8px 12px; pointer-events: none; z-index: 9999;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-  }
-  .ip-tip:hover .ip-tip-bubble { display: block; }
-  .modal-input-row { display: flex; gap: 6px; }
-  input[type="text"] {
-    background: var(--surface3); border: 1px solid var(--border2); border-radius: 7px;
-    color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.85rem;
-    height: 44px; width: 100%; padding: 0 12px; outline: none;
-    transition: border-color 0.2s; -webkit-appearance: none; appearance: none;
-  }
-  input[type="text"]:focus { border-color: var(--accent2); }
-  .port-wrap { width: 70px; flex-shrink: 0; }
-  .modal-hint { font-size: 0.75rem; color: var(--text3); margin-top: 6px; }
-  .modal-footer {
-    display: flex; gap: 8px; padding: 0.75rem 1.25rem 1.1rem;
-    background: var(--surface2); border-top: 1px solid var(--border); flex-shrink: 0;
-  }
-  .btn-save-endpoint {
-    flex: 1; height: 44px; background: var(--ok); border: none; border-radius: 8px;
-    color: #fff; font-family: 'DM Mono', monospace; font-size: 0.75rem; font-weight: 500;
-    cursor: pointer; letter-spacing: 0.04em; transition: opacity 0.2s, transform 0.15s;
-  }
-  .btn-save-endpoint:hover { opacity: 0.88; }
-  .btn-save-endpoint:active { transform: scale(0.98); }
-  .btn-close-modal {
-    height: 44px; padding: 0 16px; background: transparent;
-    border: 1px solid var(--border2); border-radius: 8px;
-    color: var(--text2); font-family: 'DM Mono', monospace; font-size: 0.75rem;
-    cursor: pointer; letter-spacing: 0.04em; transition: all 0.2s; white-space: nowrap;
-  }
-  .btn-close-modal:hover { color: var(--text); background: var(--surface3); }
-
-  /* ── HELP MODAL ── */
-  #help-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.8); z-index: 300;
-    align-items: center; justify-content: center; padding: 1rem;
-  }
-  #help-overlay.open { display: flex; }
-  .help-modal {
-    background: var(--surface); border: 1px solid var(--border2); border-radius: 14px;
-    width: 100%; max-width: 420px; overflow: hidden; position: relative;
-    max-height: 90dvh; display: flex; flex-direction: column;
-  }
-  .help-modal::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--ok), transparent); opacity: 0.5;
-  }
-  .help-modal-body { padding: 1.25rem 1.25rem 0.75rem; overflow-y: auto; flex: 1; }
-  .help-modal-body h2 { font-family: 'DM Serif Display', serif; font-size: 1.1rem; font-weight: 400; color: var(--text); margin-bottom: 0.3rem; }
-  .help-subtitle { font-size: 0.75rem; color: var(--text3); letter-spacing: 0.05em; margin-bottom: 0.9rem; }
-  .help-section { margin-bottom: 0.85rem; }
-  .help-section-title {
-    font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 0.5rem; padding-bottom: 0.3rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .help-steps { display: flex; flex-direction: column; }
-  .help-step { display: flex; gap: 9px; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
-  .help-step:last-child { border-bottom: none; padding-bottom: 0; }
-  .help-step-num {
-    width: 16px; height: 16px; border-radius: 50%;
-    background: var(--surface3); border: 1px solid var(--border2);
-    font-size: 0.75rem; color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; margin-top: 1px;
-  }
-  .help-step-content { font-size: 0.75rem; color: var(--text2); line-height: 1.55; }
-  .help-step-content .cmd {
-    display: inline-block; font-family: 'DM Mono', monospace;
-    background: var(--surface3); border: 1px solid var(--border);
-    border-radius: 3px; padding: 1px 5px; color: var(--accent);
-    font-size: 0.75rem; margin: 2px 0;
-  }
-  .help-warn-box {
-    background: rgba(184,94,94,0.08); border: 1px solid rgba(184,94,94,0.25);
-    border-radius: 6px; padding: 0.5rem 0.65rem;
-    font-size: 0.75rem; color: #c87070; line-height: 1.6; margin-top: 0.6rem;
-  }
-  .help-warn-box strong { color: var(--err); }
-  .help-modal-footer {
-    display: flex; padding: 0.75rem 1.25rem 1rem;
-    background: var(--surface2); border-top: 1px solid var(--border); flex-shrink: 0;
-  }
-  .btn-close-help {
-    flex: 1; height: 44px; background: transparent;
-    border: 1px solid var(--border2); border-radius: 8px;
-    color: var(--text2); font-family: 'DM Mono', monospace; font-size: 0.75rem;
-    cursor: pointer; letter-spacing: 0.04em; transition: all 0.2s;
-  }
-  .btn-close-help:hover { color: var(--text); background: var(--surface3); }
-
-  /* ── HOTKEY CONFIG ── */
-  .hotkey-section { padding: 0.85rem 1.25rem; background: var(--surface2); border-top: 1px solid var(--border); }
-  .hotkey-section-label { font-size: 0.75rem; font-weight: 500; color: var(--text2); letter-spacing: 0.05em; margin-bottom: 8px; }
-  .hotkey-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .hotkey-row:last-child { margin-bottom: 0; }
-  .hotkey-desc { font-size: 0.75rem; color: var(--text3); flex: 1; }
-  .hotkey-input {
-    background: var(--surface3); border: 1px solid var(--border2); border-radius: 6px;
-    color: var(--accent); font-family: 'DM Mono', monospace; font-size: 0.75rem;
-    height: 32px; width: 110px; padding: 0 8px; outline: none; text-align: center;
-    transition: border-color 0.2s; cursor: pointer; caret-color: transparent;
-    letter-spacing: 0.05em;
-  }
-  .hotkey-input:focus { border-color: var(--accent2); background: var(--surface); }
-  .hotkey-input.recording { border-color: var(--warn); color: var(--warn); animation: blink 0.6s infinite; }
-  .hotkey-hint { font-size: 0.75rem; color: var(--text3); margin-top: 4px; }
-  .hotkey-toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .hotkey-toggle-label { font-size: 0.75rem; color: var(--text2); }
-  .toggle-switch { position: relative; width: 32px; height: 18px; flex-shrink: 0; }
-  .toggle-switch input { opacity: 0; width: 0; height: 0; }
-  .toggle-slider {
-    position: absolute; inset: 0; background: var(--border2); border-radius: 18px;
-    cursor: pointer; transition: background 0.2s;
-  }
-  .toggle-slider::before {
-    content: ''; position: absolute;
-    width: 12px; height: 12px; left: 3px; top: 3px;
-    background: var(--text3); border-radius: 50%; transition: all 0.2s;
-  }
-  .toggle-switch input:checked + .toggle-slider { background: var(--ok); }
-  .toggle-switch input:checked + .toggle-slider::before { transform: translateX(14px); background: #fff; }
-
-  /* ── MOBILE ── */
-  @media (max-width: 600px) {
-    .app-body { flex-direction: column; }
-
-    .log-wrap {
-      width: 100%; height: 90px; flex-shrink: 0;
-      border-left: none; border-top: 1px solid var(--border);
-    }
-    .log-box { font-size: 0.75rem; }
-
-    .main { padding: 0.75rem; gap: 0.6rem; justify-content: flex-start; padding-top: 0.9rem; }
-
-    .page-btn { padding: 1.3rem 0.75rem; }
-    .page-btn .arrow { font-size: 2.6rem; }
-    .page-btn .kbd { display: none; }
-
-    .topbar { padding: 0.5rem 0.75rem; }
-    .topbar h1 { font-size: 0.9rem; }
-    .conn-badge { font-size: 0.75rem; }
-    .topbar-btn { font-size: 0.75rem; height: 26px; padding: 0 8px; }
-
-    .action-btn { padding: 0.85rem 0.4rem; }
-    .action-btn svg { width: 18px; height: 18px; }
-    .action-btn span { font-size: 0.75rem; }
+  .ex-title { font-weight: 600; font-size: .95rem; }
+  .ex-tag {
+    margin-left: auto;
+    font-size: .72rem;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 10px;
+    white-space: nowrap;
   }
 
-  @media (max-width: 380px) {
-    .conn-badge { display: none; }
+  .ex-body { padding: 18px 20px; }
+  .ex-body p { color: #2D3748; margin-bottom: 12px; font-size: .95rem; }
+  .ex-body .dica {
+    font-size: .82rem;
+    color: #718096;
+    background: #F7FAFC;
+    border-left: 3px solid #CBD5E0;
+    padding: 8px 12px;
+    border-radius: 0 6px 6px 0;
+    margin-top: 10px;
+  }
+  .ex-body .dica strong { color: #4A5568; }
+
+  pre {
+    background: #1A202C;
+    color: #E2E8F0;
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-family: 'Fira Code', monospace;
+    font-size: .82rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 10px 0;
+  }
+  .kw { color: #63B3ED; font-weight: 600; }   /* keywords */
+  .fn { color: #68D391; }                       /* functions */
+  .str { color: #F6AD55; }                      /* strings/values */
+  .cmt { color: #718096; font-style: italic; }  /* comments */
+  .tbl { color: #FC8181; }                      /* table names */
+
+  /* Cores por módulo */
+  .mod1 .icon { background: #EBF8FF; }
+  .mod1 .ex-num { background: #3182CE; }
+  .mod1 .ex-tag { background: #BEE3F8; color: #2B6CB0; }
+
+  .mod2 .icon { background: #E9D8FD; }
+  .mod2 .ex-num { background: #805AD5; }
+  .mod2 .ex-tag { background: #E9D8FD; color: #553C9A; }
+
+  .mod3 .icon { background: #C6F6D5; }
+  .mod3 .ex-num { background: #2D6A4F; }
+  .mod3 .ex-tag { background: #C6F6D5; color: #1C4532; }
+
+  .mod4 .icon { background: #FEFCBF; }
+  .mod4 .ex-num { background: #D69E2E; }
+  .mod4 .ex-tag { background: #FEFCBF; color: #744210; }
+
+  .mod5 .icon { background: #FED7D7; }
+  .mod5 .ex-num { background: #C53030; }
+  .mod5 .ex-tag { background: #FED7D7; color: #742A2A; }
+
+  .answer-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: .8rem;
+    color: #4299E1;
+    font-weight: 600;
+    margin-top: 10px;
+    user-select: none;
+  }
+  .answer-block { display: none; margin-top: 12px; }
+  .answer-block.open { display: block; }
+
+  footer {
+    text-align: center;
+    padding: 32px;
+    color: #718096;
+    font-size: .82rem;
+    margin-top: 20px;
   }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-left">
-    <div class="kindle-icon"></div>
-    <h1>KOReader <em>Remote</em></h1>
-  </div>
-  <div class="topbar-right">
-    <div class="conn-badge" id="conn-badge">
-      <div class="dot" id="dot"></div>
-      <span id="conn-text">desconectado</span>
-    </div>
-    <button class="topbar-btn" onclick="openModal()">configurar</button>
-    <button class="topbar-btn help" onclick="openHelp()">? ajuda</button>
-  </div>
-</div>
-
-<div class="app-body">
-  <div class="main">
-
-    <div class="connect-row">
-      <button class="btn-connect" id="btn-connect" onclick="testConnection()">
-        <svg viewBox="0 0 24 24">
-          <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-          <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-          <circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/>
-        </svg>
-        <span id="connect-label">Conectar ao KOReader</span>
-      </button>
-    </div>
-
-    <div class="cors-warn" id="cors-warn"></div>
-
-    <div class="page-controls">
-      <button class="page-btn" id="btn-prev" onclick="doPrevPage()">
-        <span class="arrow">←</span>
-        <span class="btn-label">Anterior</span>
-      </button>
-      <button class="page-btn" id="btn-next" onclick="doNextPage()">
-        <span class="arrow">→</span>
-        <span class="btn-label">Próxima</span>
-      </button>
-    </div>
-
-    <div class="action-row">
-      <button class="action-btn" onclick="sendXHR('/event/FullRefresh','Atualizar tela')">
-        <svg viewBox="0 0 24 24">
-          <polyline points="23 4 23 10 17 10"/>
-          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-        </svg>
-        <span>Atualizar tela</span>
-      </button>
-      <button class="action-btn" onclick="sendXHR('/UIManager/restartKOReader/','Reiniciar app')">
-        <svg viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10"/>
-          <polygon points="10 8 16 12 10 16 10 8"/>
-        </svg>
-        <span>Reiniciar app</span>
-      </button>
-    </div>
-
-  </div>
-
-  <!-- LOG LATERAL (desktop) / inferior (mobile) -->
-  <div class="log-wrap">
-    <div class="log-label">Log de eventos</div>
-    <div class="log-box" id="log">
-      <div class="log-line"><span class="t">--:--</span><span>aguardando ações...</span></div>
-    </div>
+<!-- ═══════════════════════════════ CAPA ═══════════════════════════════════ -->
+<div class="cover">
+  <h1>📊 Exercícios de MySQL</h1>
+  <div class="subtitle">Trilha de Transição de Carreira → Analista de Dados</div>
+  <p style="opacity:.75;font-size:.9rem;">Nível: Estágio / Analista Jr. &nbsp;|&nbsp; 25 exercícios práticos &nbsp;|&nbsp; 2 bancos de dados temáticos</p>
+  <div class="badge-row">
+    <span class="badge">🛒 BD: E-commerce</span>
+    <span class="badge">🏢 BD: RH Empresa</span>
+    <span class="badge">SELECT · WHERE · JOIN</span>
+    <span class="badge">GROUP BY · Subqueries</span>
+    <span class="badge">Window Functions</span>
   </div>
 </div>
 
-<div class="page-footer">
-  <span>KOReader HTTP Inspector · porta padrão 8081</span>
-  <a href="https://github.com/abritalo/koreader-turn-pager" target="_blank" rel="noopener" class="footer-gh">github</a>
-</div>
+<div class="content">
 
-<!-- SETUP MODAL -->
-<div class="overlay" id="overlay" onclick="overlayClick(event)">
-  <div class="modal">
-    <div class="modal-body">
-      <h2>Setup &amp; Endpoint</h2>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <strong>Ative o KOReader HTTP Inspector (confirme a porta — padrão 8081).</strong>
-            <span class="path">Menu (4º ícone) → Mais ferramentas → KOReader HTTP Inspector → Start HTTP Server</span>
-            <p style="margin-top:4px;">Dica: ative "Auto start HTTP server".</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <strong>Pegue o IP do Kindle.</strong>
-            <span class="path">Menu (3º ícone, engrenagem) → Rede → Informações de rede</span>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <strong>Digite IP e Porta abaixo. Salvo só neste browser.</strong>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">4</div>
-          <div class="step-content">
-            <strong>Use este arquivo aberto localmente no PC (duplo clique → file://) para máxima compatibilidade.</strong>
-          </div>
-        </div>
-      </div>
+<!-- ═══════════════════════ ESTRUTURA DOS BANCOS ════════════════════════════ -->
+<div class="db-block">
+  <h2>🗂️ Estrutura dos Bancos de Dados</h2>
+  <p style="margin-bottom:18px;font-size:.9rem;color:#4A5568;">Crie os dois bancos no MySQL e importe os dados das planilhas disponibilizadas para praticar.</p>
+
+  <p style="font-weight:700;margin-bottom:10px;color:#1F3864;">📦 Banco: <code>db_ecommerce</code> (Planilha 1)</p>
+  <div class="tables-grid" style="margin-bottom:24px;">
+    <div class="table-card">
+      <h3>clientes</h3>
+      <ul>
+        <li><span class="pk">cliente_id</span> <span class="type">INT PK</span></li>
+        <li>nome <span class="type">VARCHAR</span></li>
+        <li>email <span class="type">VARCHAR</span></li>
+        <li>cidade <span class="type">VARCHAR</span></li>
+        <li>estado <span class="type">CHAR(2)</span></li>
+        <li>data_cadastro <span class="type">DATE</span></li>
+        <li>ativo <span class="type">TINYINT</span></li>
+      </ul>
     </div>
-    <div class="modal-conn">
-      <div class="modal-conn-label">
-        Kindle IP &amp; Porta
-        <span class="ip-tip" title="No Kindle: Menu (engrenagem) → Rede → Informações de rede">
-          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
-          <span class="ip-tip-bubble">IP disponível em: Menu (engrenagem) → Rede → Informações de rede</span>
-        </span>
-      </div>
-      <div class="modal-input-row">
-        <input type="text" id="ip" placeholder="192.168.1.100" autocomplete="off" spellcheck="false" inputmode="url"/>
-        <div class="port-wrap">
-          <input type="text" id="port" placeholder="8081" autocomplete="off" spellcheck="false" inputmode="numeric"/>
-        </div>
-      </div>
-      <div class="modal-hint">Armazenado localmente; nenhum servidor externo vê isso.</div>
+    <div class="table-card">
+      <h3>produtos</h3>
+      <ul>
+        <li><span class="pk">produto_id</span> <span class="type">INT PK</span></li>
+        <li>nome_produto <span class="type">VARCHAR</span></li>
+        <li>categoria <span class="type">VARCHAR</span></li>
+        <li>preco <span class="type">DECIMAL(10,2)</span></li>
+        <li>estoque <span class="type">INT</span></li>
+        <li><span class="fk">fornecedor_id</span> <span class="type">INT FK</span></li>
+      </ul>
     </div>
-    <div class="modal-footer">
-      <button class="btn-save-endpoint" onclick="saveEndpoint()">Salvar endpoint</button>
-      <button class="btn-close-modal" onclick="closeModal()">Fechar</button>
+    <div class="table-card">
+      <h3>pedidos</h3>
+      <ul>
+        <li><span class="pk">pedido_id</span> <span class="type">INT PK</span></li>
+        <li><span class="fk">cliente_id</span> <span class="type">INT FK</span></li>
+        <li>data_pedido <span class="type">DATE</span></li>
+        <li>status <span class="type">VARCHAR</span></li>
+        <li>total <span class="type">DECIMAL(10,2)</span></li>
+        <li>metodo_pagamento <span class="type">VARCHAR</span></li>
+      </ul>
+    </div>
+    <div class="table-card">
+      <h3>itens_pedido</h3>
+      <ul>
+        <li><span class="pk">item_id</span> <span class="type">INT PK</span></li>
+        <li><span class="fk">pedido_id</span> <span class="type">INT FK</span></li>
+        <li><span class="fk">produto_id</span> <span class="type">INT FK</span></li>
+        <li>quantidade <span class="type">INT</span></li>
+        <li>preco_unitario <span class="type">DECIMAL(10,2)</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <p style="font-weight:700;margin-bottom:10px;color:#2D6A4F;">🏢 Banco: <code>db_rh</code> (Planilha 2)</p>
+  <div class="tables-grid">
+    <div class="table-card">
+      <h3>departamentos</h3>
+      <ul>
+        <li><span class="pk">depto_id</span> <span class="type">INT PK</span></li>
+        <li>nome_depto <span class="type">VARCHAR</span></li>
+        <li>cidade <span class="type">VARCHAR</span></li>
+        <li>orcamento_anual <span class="type">DECIMAL(12,2)</span></li>
+      </ul>
+    </div>
+    <div class="table-card">
+      <h3>funcionarios</h3>
+      <ul>
+        <li><span class="pk">func_id</span> <span class="type">INT PK</span></li>
+        <li>nome <span class="type">VARCHAR</span></li>
+        <li>cargo <span class="type">VARCHAR</span></li>
+        <li><span class="fk">depto_id</span> <span class="type">INT FK</span></li>
+        <li>salario <span class="type">DECIMAL(10,2)</span></li>
+        <li>data_admissao <span class="type">DATE</span></li>
+        <li><span class="fk">gestor_id</span> <span class="type">INT FK</span></li>
+        <li>ativo <span class="type">TINYINT</span></li>
+      </ul>
+    </div>
+    <div class="table-card">
+      <h3>avaliacoes</h3>
+      <ul>
+        <li><span class="pk">avaliacao_id</span> <span class="type">INT PK</span></li>
+        <li><span class="fk">func_id</span> <span class="type">INT FK</span></li>
+        <li>ano <span class="type">INT</span></li>
+        <li>nota <span class="type">INT</span></li>
+        <li>observacao <span class="type">TEXT</span></li>
+      </ul>
     </div>
   </div>
 </div>
 
-<!-- HELP MODAL -->
-<div id="help-overlay" onclick="helpOverlayClick(event)">
-  <div class="help-modal">
-    <div class="help-modal-body">
-      <h2>Ajuda &amp; Solução de Problemas</h2>
-      <p class="help-subtitle">Dicas para Firefox e funcionalidades do site</p>
+<!-- ═══════════════════ MÓDULO 1 — SELECT e Filtros ═════════════════════════ -->
+<div class="section-title mod1">
+  <div class="icon">🔍</div>
+  <div>
+    <h2>Módulo 1 — SELECT, WHERE e Filtros</h2>
+    <div style="font-size:.82rem;color:#718096;">Banco: db_ecommerce</div>
+  </div>
+  <span class="nivel nivel-basico">🟢 Básico</span>
+</div>
 
-      <div class="help-section">
-        <div class="help-section-title">🔧 Firefox — Liberar Mixed Content (HTTPS → HTTP)</div>
-        <p style="font-size:0.75rem;color:var(--text3);line-height:1.6;margin-bottom:0.5rem;">
-          O Firefox bloqueia chamadas HTTP quando a página está em HTTPS. Siga os passos:
-        </p>
-        <div class="help-steps">
-          <div class="help-step">
-            <div class="help-step-num">1</div>
-            <div class="help-step-content">Na barra de endereço, digite <span class="cmd">about:config</span> e pressione Enter.</div>
-          </div>
-          <div class="help-step">
-            <div class="help-step-num">2</div>
-            <div class="help-step-content">Clique em <strong>"Aceitar o risco e continuar"</strong>.</div>
-          </div>
-          <div class="help-step">
-            <div class="help-step-num">3</div>
-            <div class="help-step-content">Na caixa de pesquisa, cole: <span class="cmd">security.mixed_content.block_active_content</span></div>
-          </div>
-          <div class="help-step">
-            <div class="help-step-num">4</div>
-            <div class="help-step-content">Clique no ícone ⇄ à direita para mudar o valor de <strong>true</strong> para <strong>false</strong>.</div>
-          </div>
-          <div class="help-step">
-            <div class="help-step-num">5</div>
-            <div class="help-step-content">Recarregue esta página. O KOReader agora pode ser acessado.</div>
-          </div>
-        </div>
-        <div class="help-warn-box">
-          <strong>⚠ Atenção:</strong> Esta configuração vale para <em>todas</em> as páginas no Firefox. Reverta para <strong>true</strong> quando não estiver usando o KOReader Remote.
-        </div>
-      </div>
-
-      <div class="help-section">
-        <div class="help-section-title">⚡ Solução mais simples para tudo</div>
-        <p style="font-size:0.75rem;color:var(--text2);line-height:1.7;">
-          Abra o <span class="cmd">index.html</span> com duplo clique no explorador de arquivos.
-          A barra de endereço mostrará <span class="cmd">file:///C:/...</span>.
-          Nesse modo, Mixed Content não existe — funciona 100% em qualquer browser.
-        </p>
-      </div>
-    </div>
-    <div class="help-modal-footer">
-      <button class="btn-close-help" onclick="closeHelp()">Fechar</button>
+<!-- Ex 1 -->
+<div class="exercise mod1">
+  <div class="ex-header">
+    <div class="ex-num">01</div>
+    <span class="ex-title">Listando todos os clientes ativos</span>
+    <span class="ex-tag">SELECT · WHERE</span>
+  </div>
+  <div class="ex-body">
+    <p>Selecione o <strong>nome</strong>, <strong>email</strong> e <strong>cidade</strong> de todos os clientes que estão ativos (<code>ativo = 1</code>). Ordene pelo nome em ordem alfabética.</p>
+    <div class="dica">💡 <strong>Dica:</strong> Use <code>ORDER BY nome ASC</code> no final da query.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span> nome, email, cidade
+<span class="kw">FROM</span>   <span class="tbl">clientes</span>
+<span class="kw">WHERE</span>  ativo <span class="kw">=</span> <span class="str">1</span>
+<span class="kw">ORDER BY</span> nome <span class="kw">ASC</span>;</pre>
     </div>
   </div>
 </div>
+
+<!-- Ex 2 -->
+<div class="exercise mod1">
+  <div class="ex-header">
+    <div class="ex-num">02</div>
+    <span class="ex-title">Produtos por faixa de preço</span>
+    <span class="ex-tag">WHERE · BETWEEN</span>
+  </div>
+  <div class="ex-body">
+    <p>Liste o <strong>nome_produto</strong>, <strong>categoria</strong> e <strong>preco</strong> dos produtos com preço entre R$200 e R$1.000. Ordene do mais barato para o mais caro.</p>
+    <div class="dica">💡 <strong>Dica:</strong> <code>BETWEEN 200 AND 1000</code> inclui os dois extremos.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span> nome_produto, categoria, preco
+<span class="kw">FROM</span>   <span class="tbl">produtos</span>
+<span class="kw">WHERE</span>  preco <span class="kw">BETWEEN</span> <span class="str">200</span> <span class="kw">AND</span> <span class="str">1000</span>
+<span class="kw">ORDER BY</span> preco <span class="kw">ASC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 3 -->
+<div class="exercise mod1">
+  <div class="ex-header">
+    <div class="ex-num">03</div>
+    <span class="ex-title">Pedidos com status específico</span>
+    <span class="ex-tag">WHERE · IN</span>
+  </div>
+  <div class="ex-body">
+    <p>Encontre todos os pedidos com status <strong>"Cancelado"</strong> ou <strong>"Processando"</strong>. Mostre o <strong>pedido_id</strong>, <strong>cliente_id</strong>, <strong>data_pedido</strong>, <strong>status</strong> e <strong>total</strong>.</p>
+    <div class="dica">💡 <strong>Dica:</strong> O operador <code>IN</code> é mais elegante do que múltiplos <code>OR</code>.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span> pedido_id, cliente_id, data_pedido, status, total
+<span class="kw">FROM</span>   <span class="tbl">pedidos</span>
+<span class="kw">WHERE</span>  status <span class="kw">IN</span> (<span class="str">'Cancelado'</span>, <span class="str">'Processando'</span>)
+<span class="kw">ORDER BY</span> data_pedido;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 4 -->
+<div class="exercise mod1">
+  <div class="ex-header">
+    <div class="ex-num">04</div>
+    <span class="ex-title">Busca por texto parcial</span>
+    <span class="ex-tag">LIKE</span>
+  </div>
+  <div class="ex-body">
+    <p>Liste todos os produtos da categoria <strong>"Informática"</strong> cujo nome começa com a letra <strong>"M"</strong> ou contém a palavra <strong>"HD"</strong>.</p>
+    <div class="dica">💡 <strong>Dica:</strong> Use <code>LIKE 'M%'</code> para "começa com M" e <code>LIKE '%HD%'</code> para contém.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span> nome_produto, categoria, preco
+<span class="kw">FROM</span>   <span class="tbl">produtos</span>
+<span class="kw">WHERE</span>  categoria <span class="kw">=</span> <span class="str">'Informática'</span>
+  <span class="kw">AND</span>  (nome_produto <span class="kw">LIKE</span> <span class="str">'M%'</span> <span class="kw">OR</span> nome_produto <span class="kw">LIKE</span> <span class="str">'%HD%'</span>);</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 5 -->
+<div class="exercise mod1">
+  <div class="ex-header">
+    <div class="ex-num">05</div>
+    <span class="ex-title">Pedidos de 2023</span>
+    <span class="ex-tag">DATE · YEAR()</span>
+  </div>
+  <div class="ex-body">
+    <p>Liste todos os pedidos realizados no ano de <strong>2023</strong>. Mostre o <strong>pedido_id</strong>, <strong>data_pedido</strong>, <strong>status</strong> e <strong>total</strong>, ordenando pela data mais recente.</p>
+    <div class="dica">💡 <strong>Dica:</strong> Use a função <code>YEAR(data_pedido) = 2023</code> ou <code>BETWEEN '2023-01-01' AND '2023-12-31'</code>.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span> pedido_id, data_pedido, status, total
+<span class="kw">FROM</span>   <span class="tbl">pedidos</span>
+<span class="kw">WHERE</span>  <span class="fn">YEAR</span>(data_pedido) <span class="kw">=</span> <span class="str">2023</span>
+<span class="kw">ORDER BY</span> data_pedido <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MÓDULO 2 — Funções Agregadas ════════════════════════ -->
+<div class="section-title mod2">
+  <div class="icon">📐</div>
+  <div>
+    <h2>Módulo 2 — Funções Agregadas e GROUP BY</h2>
+    <div style="font-size:.82rem;color:#718096;">Banco: db_ecommerce · db_rh</div>
+  </div>
+  <span class="nivel nivel-basico">🟢 Básico–Médio</span>
+</div>
+
+<!-- Ex 6 -->
+<div class="exercise mod2">
+  <div class="ex-header">
+    <div class="ex-num">06</div>
+    <span class="ex-title">Total de pedidos por status</span>
+    <span class="ex-tag">COUNT · GROUP BY</span>
+  </div>
+  <div class="ex-body">
+    <p>Conte quantos pedidos existem para cada <strong>status</strong>. Mostre o status e a quantidade, ordenando do maior para o menor número de pedidos.</p>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>   status, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> qtd_pedidos
+<span class="kw">FROM</span>     <span class="tbl">pedidos</span>
+<span class="kw">GROUP BY</span> status
+<span class="kw">ORDER BY</span> qtd_pedidos <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 7 -->
+<div class="exercise mod2">
+  <div class="ex-header">
+    <div class="ex-num">07</div>
+    <span class="ex-title">Receita total por método de pagamento</span>
+    <span class="ex-tag">SUM · GROUP BY</span>
+  </div>
+  <div class="ex-body">
+    <p>Calcule a <strong>receita total</strong> (soma do campo <code>total</code>) agrupada por <strong>metodo_pagamento</strong>. Considere apenas pedidos com status <strong>"Entregue"</strong>.</p>
+    <div class="dica">💡 <strong>Dica:</strong> O <code>WHERE</code> filtra antes do <code>GROUP BY</code>. Não confunda com <code>HAVING</code>!</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>   metodo_pagamento,
+         <span class="fn">SUM</span>(total) <span class="kw">AS</span> receita_total
+<span class="kw">FROM</span>     <span class="tbl">pedidos</span>
+<span class="kw">WHERE</span>    status <span class="kw">=</span> <span class="str">'Entregue'</span>
+<span class="kw">GROUP BY</span> metodo_pagamento
+<span class="kw">ORDER BY</span> receita_total <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 8 -->
+<div class="exercise mod2">
+  <div class="ex-header">
+    <div class="ex-num">08</div>
+    <span class="ex-title">Preço médio por categoria (db_ecommerce)</span>
+    <span class="ex-tag">AVG · ROUND · HAVING</span>
+  </div>
+  <div class="ex-body">
+    <p>Calcule o <strong>preço médio</strong> dos produtos por categoria. Mostre apenas categorias com preço médio acima de <strong>R$500</strong>. Arredonde para 2 casas decimais.</p>
+    <div class="dica">💡 <strong>Dica:</strong> Use <code>HAVING AVG(preco) > 500</code> — o <code>HAVING</code> filtra após a agregação.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>   categoria,
+         <span class="fn">ROUND</span>(<span class="fn">AVG</span>(preco), <span class="str">2</span>) <span class="kw">AS</span> preco_medio
+<span class="kw">FROM</span>     <span class="tbl">produtos</span>
+<span class="kw">GROUP BY</span> categoria
+<span class="kw">HAVING</span>   <span class="fn">AVG</span>(preco) <span class="kw">></span> <span class="str">500</span>
+<span class="kw">ORDER BY</span> preco_medio <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 9 -->
+<div class="exercise mod2">
+  <div class="ex-header">
+    <div class="ex-num">09</div>
+    <span class="ex-title">Salário médio por departamento (db_rh)</span>
+    <span class="ex-tag">AVG · GROUP BY · JOIN</span>
+  </div>
+  <div class="ex-body">
+    <p>No banco <code>db_rh</code>, mostre o <strong>nome do departamento</strong>, o <strong>número de funcionários ativos</strong> e o <strong>salário médio</strong>. Ordene pelo salário médio decrescente.</p>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>   d.nome_depto,
+         <span class="fn">COUNT</span>(f.func_id)     <span class="kw">AS</span> qtd_funcionarios,
+         <span class="fn">ROUND</span>(<span class="fn">AVG</span>(f.salario), <span class="str">2</span>) <span class="kw">AS</span> salario_medio
+<span class="kw">FROM</span>     <span class="tbl">departamentos</span>  d
+<span class="kw">JOIN</span>     <span class="tbl">funcionarios</span>   f <span class="kw">ON</span> d.depto_id <span class="kw">=</span> f.depto_id
+<span class="kw">WHERE</span>    f.ativo <span class="kw">=</span> <span class="str">1</span>
+<span class="kw">GROUP BY</span> d.depto_id, d.nome_depto
+<span class="kw">ORDER BY</span> salario_medio <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 10 -->
+<div class="exercise mod2">
+  <div class="ex-header">
+    <div class="ex-num">10</div>
+    <span class="ex-title">Produtos mais vendidos (quantidade)</span>
+    <span class="ex-tag">SUM · GROUP BY · LIMIT</span>
+  </div>
+  <div class="ex-body">
+    <p>Usando a tabela <code>itens_pedido</code>, descubra os <strong>5 produtos mais vendidos</strong> em quantidade total. Mostre o <strong>produto_id</strong> e o total de unidades vendidas.</p>
+    <div class="dica">💡 <strong>Dica:</strong> <code>LIMIT 5</code> vai no final da query, após o <code>ORDER BY</code>.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>   produto_id,
+         <span class="fn">SUM</span>(quantidade) <span class="kw">AS</span> total_vendido
+<span class="kw">FROM</span>     <span class="tbl">itens_pedido</span>
+<span class="kw">GROUP BY</span> produto_id
+<span class="kw">ORDER BY</span> total_vendido <span class="kw">DESC</span>
+<span class="kw">LIMIT</span>    <span class="str">5</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MÓDULO 3 — JOINs ════════════════════════════════════ -->
+<div class="section-title mod3">
+  <div class="icon">🔗</div>
+  <div>
+    <h2>Módulo 3 — JOINs</h2>
+    <div style="font-size:.82rem;color:#718096;">Banco: db_ecommerce · db_rh</div>
+  </div>
+  <span class="nivel nivel-medio">🟡 Médio</span>
+</div>
+
+<!-- Ex 11 -->
+<div class="exercise mod3">
+  <div class="ex-header">
+    <div class="ex-num">11</div>
+    <span class="ex-title">Pedidos com nome do cliente</span>
+    <span class="ex-tag">INNER JOIN</span>
+  </div>
+  <div class="ex-body">
+    <p>Combine as tabelas <code>pedidos</code> e <code>clientes</code> para mostrar: <strong>pedido_id</strong>, <strong>nome do cliente</strong>, <strong>data_pedido</strong>, <strong>status</strong> e <strong>total</strong>. Filtre apenas pedidos "Entregue".</p>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>  p.pedido_id,
+        c.nome <span class="kw">AS</span> cliente,
+        p.data_pedido,
+        p.status,
+        p.total
+<span class="kw">FROM</span>    <span class="tbl">pedidos</span>   p
+<span class="kw">JOIN</span>    <span class="tbl">clientes</span>  c <span class="kw">ON</span> p.cliente_id <span class="kw">=</span> c.cliente_id
+<span class="kw">WHERE</span>   p.status <span class="kw">=</span> <span class="str">'Entregue'</span>
+<span class="kw">ORDER BY</span> p.data_pedido <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 12 -->
+<div class="exercise mod3">
+  <div class="ex-header">
+    <div class="ex-num">12</div>
+    <span class="ex-title">Detalhes completos do pedido (3 tabelas)</span>
+    <span class="ex-tag">JOIN · JOIN · JOIN</span>
+  </div>
+  <div class="ex-body">
+    <p>Faça um relatório juntando <code>pedidos</code>, <code>itens_pedido</code> e <code>produtos</code>. Mostre: <strong>pedido_id</strong>, <strong>data_pedido</strong>, <strong>nome_produto</strong>, <strong>quantidade</strong> e <strong>preco_unitario</strong>.</p>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>  p.pedido_id,
+        p.data_pedido,
+        pr.nome_produto,
+        ip.quantidade,
+        ip.preco_unitario
+<span class="kw">FROM</span>    <span class="tbl">pedidos</span>       p
+<span class="kw">JOIN</span>    <span class="tbl">itens_pedido</span>  ip <span class="kw">ON</span> p.pedido_id  <span class="kw">=</span> ip.pedido_id
+<span class="kw">JOIN</span>    <span class="tbl">produtos</span>      pr <span class="kw">ON</span> ip.produto_id <span class="kw">=</span> pr.produto_id
+<span class="kw">ORDER BY</span> p.pedido_id, pr.nome_produto;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 13 -->
+<div class="exercise mod3">
+  <div class="ex-header">
+    <div class="ex-num">13</div>
+    <span class="ex-title">Clientes sem pedidos (LEFT JOIN)</span>
+    <span class="ex-tag">LEFT JOIN · IS NULL</span>
+  </div>
+  <div class="ex-body">
+    <p>Identifique quais clientes <strong>nunca fizeram nenhum pedido</strong>. Mostre o nome e email desses clientes.</p>
+    <div class="dica">💡 <strong>Dica:</strong> Use <code>LEFT JOIN</code> e filtre onde o <code>pedido_id IS NULL</code> — isso indica que o cliente não tem correspondência na tabela de pedidos.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>  c.nome, c.email
+<span class="kw">FROM</span>    <span class="tbl">clientes</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">pedidos</span> p <span class="kw">ON</span> c.cliente_id <span class="kw">=</span> p.cliente_id
+<span class="kw">WHERE</span>   p.pedido_id <span class="kw">IS NULL</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 14 -->
+<div class="exercise mod3">
+  <div class="ex-header">
+    <div class="ex-num">14</div>
+    <span class="ex-title">Funcionários e seus gestores (Self JOIN)</span>
+    <span class="ex-tag">SELF JOIN · db_rh</span>
+  </div>
+  <div class="ex-body">
+    <p>No banco <code>db_rh</code>, liste cada funcionário com o <strong>nome do seu gestor</strong>. Funcionários sem gestor (diretores) devem aparecer com "Sem gestor".</p>
+    <div class="dica">💡 <strong>Dica:</strong> Faça um <code>LEFT JOIN</code> da tabela <code>funcionarios</code> com ela mesma, usando <code>gestor_id</code> para cruzar com <code>func_id</code>.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>  f.nome                              <span class="kw">AS</span> funcionario,
+        f.cargo,
+        <span class="fn">COALESCE</span>(g.nome, <span class="str">'Sem gestor'</span>)   <span class="kw">AS</span> gestor
+<span class="kw">FROM</span>    <span class="tbl">funcionarios</span> f
+<span class="kw">LEFT JOIN</span> <span class="tbl">funcionarios</span> g <span class="kw">ON</span> f.gestor_id <span class="kw">=</span> g.func_id
+<span class="kw">WHERE</span>   f.ativo <span class="kw">=</span> <span class="str">1</span>
+<span class="kw">ORDER BY</span> gestor, f.nome;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 15 -->
+<div class="exercise mod3">
+  <div class="ex-header">
+    <div class="ex-num">15</div>
+    <span class="ex-title">Receita total por cliente</span>
+    <span class="ex-tag">JOIN · SUM · GROUP BY</span>
+  </div>
+  <div class="ex-body">
+    <p>Mostre o <strong>nome</strong> e <strong>estado</strong> de cada cliente junto com o <strong>total gasto</strong> em pedidos "Entregue". Ordene pelo total gasto decrescente. Inclua apenas clientes com gasto acima de R$1.000.</p>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>   c.nome, c.estado,
+         <span class="fn">SUM</span>(p.total) <span class="kw">AS</span> total_gasto
+<span class="kw">FROM</span>     <span class="tbl">clientes</span> c
+<span class="kw">JOIN</span>     <span class="tbl">pedidos</span>  p <span class="kw">ON</span> c.cliente_id <span class="kw">=</span> p.cliente_id
+<span class="kw">WHERE</span>    p.status <span class="kw">=</span> <span class="str">'Entregue'</span>
+<span class="kw">GROUP BY</span> c.cliente_id, c.nome, c.estado
+<span class="kw">HAVING</span>   <span class="fn">SUM</span>(p.total) <span class="kw">></span> <span class="str">1000</span>
+<span class="kw">ORDER BY</span> total_gasto <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MÓDULO 4 — Subqueries ═══════════════════════════════ -->
+<div class="section-title mod4">
+  <div class="icon">🪆</div>
+  <div>
+    <h2>Módulo 4 — Subqueries e CTEs</h2>
+    <div style="font-size:.82rem;color:#718096;">Banco: db_ecommerce · db_rh</div>
+  </div>
+  <span class="nivel nivel-medio">🟡 Médio</span>
+</div>
+
+<!-- Ex 16 -->
+<div class="exercise mod4">
+  <div class="ex-header">
+    <div class="ex-num">16</div>
+    <span class="ex-title">Produtos com preço acima da média</span>
+    <span class="ex-tag">Subquery no WHERE</span>
+  </div>
+  <div class="ex-body">
+    <p>Liste os produtos cujo preço está <strong>acima da média geral de preços</strong>. Mostre o nome, categoria e preço.</p>
+    <div class="dica">💡 <strong>Dica:</strong> A subquery <code>(SELECT AVG(preco) FROM produtos)</code> retorna um único valor que pode ser usado no <code>WHERE</code>.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span> nome_produto, categoria, preco
+<span class="kw">FROM</span>   <span class="tbl">produtos</span>
+<span class="kw">WHERE</span>  preco <span class="kw">></span> (<span class="kw">SELECT</span> <span class="fn">AVG</span>(preco) <span class="kw">FROM</span> <span class="tbl">produtos</span>)
+<span class="kw">ORDER BY</span> preco <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 17 -->
+<div class="exercise mod4">
+  <div class="ex-header">
+    <div class="ex-num">17</div>
+    <span class="ex-title">Clientes que compraram Notebooks</span>
+    <span class="ex-tag">Subquery com IN</span>
+  </div>
+  <div class="ex-body">
+    <p>Encontre os clientes que já compraram o produto <strong>"Notebook Dell"</strong>. Mostre o nome e email.</p>
+    <div class="dica">💡 <strong>Dica:</strong> Você precisará de subqueries aninhadas: clientes → pedidos → itens_pedido → produto.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span> nome, email
+<span class="kw">FROM</span>   <span class="tbl">clientes</span>
+<span class="kw">WHERE</span>  cliente_id <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> cliente_id
+    <span class="kw">FROM</span>   <span class="tbl">pedidos</span>
+    <span class="kw">WHERE</span>  pedido_id <span class="kw">IN</span> (
+        <span class="kw">SELECT</span> pedido_id
+        <span class="kw">FROM</span>   <span class="tbl">itens_pedido</span>
+        <span class="kw">WHERE</span>  produto_id <span class="kw">=</span> (
+            <span class="kw">SELECT</span> produto_id
+            <span class="kw">FROM</span>   <span class="tbl">produtos</span>
+            <span class="kw">WHERE</span>  nome_produto <span class="kw">=</span> <span class="str">'Notebook Dell'</span>
+        )
+    )
+);</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 18 -->
+<div class="exercise mod4">
+  <div class="ex-header">
+    <div class="ex-num">18</div>
+    <span class="ex-title">Funcionários acima da média salarial do depto (db_rh)</span>
+    <span class="ex-tag">Subquery correlacionada</span>
+  </div>
+  <div class="ex-body">
+    <p>Liste os funcionários cujo salário está <strong>acima da média do seu próprio departamento</strong>. Mostre nome, cargo, departamento e salário.</p>
+    <div class="dica">💡 <strong>Dica:</strong> Uma subquery correlacionada referencia a tabela externa com um alias: <code>WHERE f2.depto_id = f1.depto_id</code>.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>  f1.nome, f1.cargo, d.nome_depto, f1.salario
+<span class="kw">FROM</span>    <span class="tbl">funcionarios</span> f1
+<span class="kw">JOIN</span>    <span class="tbl">departamentos</span> d <span class="kw">ON</span> f1.depto_id <span class="kw">=</span> d.depto_id
+<span class="kw">WHERE</span>   f1.salario <span class="kw">></span> (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(f2.salario)
+    <span class="kw">FROM</span>   <span class="tbl">funcionarios</span> f2
+    <span class="kw">WHERE</span>  f2.depto_id <span class="kw">=</span> f1.depto_id
+)
+<span class="kw">AND</span> f1.ativo <span class="kw">=</span> <span class="str">1</span>
+<span class="kw">ORDER BY</span> d.nome_depto, f1.salario <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 19 -->
+<div class="exercise mod4">
+  <div class="ex-header">
+    <div class="ex-num">19</div>
+    <span class="ex-title">Top produtos por receita usando CTE</span>
+    <span class="ex-tag">WITH (CTE)</span>
+  </div>
+  <div class="ex-body">
+    <p>Use uma <strong>CTE (Common Table Expression)</strong> para calcular a receita de cada produto (quantidade × preco_unitario em itens_pedido) e depois mostre apenas os 3 com maior receita, com o nome do produto.</p>
+    <div class="dica">💡 <strong>Dica:</strong> CTEs tornam o código mais legível: <code>WITH nome_cte AS (SELECT ...)</code> e depois use como se fosse uma tabela.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">WITH</span> receita_produto <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>   produto_id,
+             <span class="fn">SUM</span>(quantidade * preco_unitario) <span class="kw">AS</span> receita
+    <span class="kw">FROM</span>     <span class="tbl">itens_pedido</span>
+    <span class="kw">GROUP BY</span> produto_id
+)
+<span class="kw">SELECT</span>  p.nome_produto,
+        rp.receita
+<span class="kw">FROM</span>    receita_produto  rp
+<span class="kw">JOIN</span>    <span class="tbl">produtos</span>         p <span class="kw">ON</span> rp.produto_id <span class="kw">=</span> p.produto_id
+<span class="kw">ORDER BY</span> rp.receita <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="str">3</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 20 -->
+<div class="exercise mod4">
+  <div class="ex-header">
+    <div class="ex-num">20</div>
+    <span class="ex-title">Relatório de avaliações com CTE (db_rh)</span>
+    <span class="ex-tag">WITH · AVG · JOIN</span>
+  </div>
+  <div class="ex-body">
+    <p>Com uma CTE, calcule a <strong>nota média por funcionário</strong> e em seguida mostre o nome, cargo e média, apenas para quem tem média de avaliação <strong>≥ 8</strong>.</p>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">WITH</span> media_aval <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>   func_id,
+             <span class="fn">ROUND</span>(<span class="fn">AVG</span>(nota), <span class="str">1</span>) <span class="kw">AS</span> media_nota
+    <span class="kw">FROM</span>     <span class="tbl">avaliacoes</span>
+    <span class="kw">GROUP BY</span> func_id
+)
+<span class="kw">SELECT</span>  f.nome, f.cargo, ma.media_nota
+<span class="kw">FROM</span>    media_aval     ma
+<span class="kw">JOIN</span>    <span class="tbl">funcionarios</span>  f <span class="kw">ON</span> ma.func_id <span class="kw">=</span> f.func_id
+<span class="kw">WHERE</span>   ma.media_nota <span class="kw">>=</span> <span class="str">8</span>
+<span class="kw">ORDER BY</span> ma.media_nota <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MÓDULO 5 — Window Functions ═════════════════════════ -->
+<div class="section-title mod5">
+  <div class="icon">🪟</div>
+  <div>
+    <h2>Módulo 5 — Window Functions e Análises Avançadas</h2>
+    <div style="font-size:.82rem;color:#718096;">Banco: db_ecommerce · db_rh</div>
+  </div>
+  <span class="nivel nivel-avancado">🔴 Avançado</span>
+</div>
+
+<!-- Ex 21 -->
+<div class="exercise mod5">
+  <div class="ex-header">
+    <div class="ex-num">21</div>
+    <span class="ex-title">Ranking de funcionários por salário no depto (db_rh)</span>
+    <span class="ex-tag">RANK() OVER (PARTITION BY)</span>
+  </div>
+  <div class="ex-body">
+    <p>Para cada funcionário ativo, exiba seu <strong>nome</strong>, <strong>departamento</strong>, <strong>salário</strong> e uma coluna <strong>rank_salario</strong> indicando sua posição salarial dentro do departamento (1 = maior salário).</p>
+    <div class="dica">💡 <strong>Dica:</strong> <code>RANK() OVER (PARTITION BY depto_id ORDER BY salario DESC)</code> reinicia o ranking a cada departamento.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">SELECT</span>  f.nome,
+        d.nome_depto,
+        f.salario,
+        <span class="fn">RANK</span>() <span class="kw">OVER</span> (
+            <span class="kw">PARTITION BY</span> f.depto_id
+            <span class="kw">ORDER BY</span> f.salario <span class="kw">DESC</span>
+        ) <span class="kw">AS</span> rank_salario
+<span class="kw">FROM</span>    <span class="tbl">funcionarios</span>  f
+<span class="kw">JOIN</span>    <span class="tbl">departamentos</span> d <span class="kw">ON</span> f.depto_id <span class="kw">=</span> d.depto_id
+<span class="kw">WHERE</span>   f.ativo <span class="kw">=</span> <span class="str">1</span>
+<span class="kw">ORDER BY</span> d.nome_depto, rank_salario;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 22 -->
+<div class="exercise mod5">
+  <div class="ex-header">
+    <div class="ex-num">22</div>
+    <span class="ex-title">Receita acumulada de pedidos por mês</span>
+    <span class="ex-tag">SUM() OVER · DATE_FORMAT</span>
+  </div>
+  <div class="ex-body">
+    <p>Calcule a <strong>receita mensal</strong> e a <strong>receita acumulada</strong> mês a mês de todos os pedidos "Entregue" em 2023. Mostre: mês, receita do mês e receita acumulada.</p>
+    <div class="dica">💡 <strong>Dica:</strong> Use <code>DATE_FORMAT(data_pedido, '%Y-%m')</code> para agrupar por mês, e <code>SUM(...) OVER (ORDER BY mes)</code> para o acumulado.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">WITH</span> mensal <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>   <span class="fn">DATE_FORMAT</span>(data_pedido, <span class="str">'%Y-%m'</span>) <span class="kw">AS</span> mes,
+             <span class="fn">SUM</span>(total) <span class="kw">AS</span> receita_mes
+    <span class="kw">FROM</span>     <span class="tbl">pedidos</span>
+    <span class="kw">WHERE</span>    status <span class="kw">=</span> <span class="str">'Entregue'</span>
+      <span class="kw">AND</span>    <span class="fn">YEAR</span>(data_pedido) <span class="kw">=</span> <span class="str">2023</span>
+    <span class="kw">GROUP BY</span> <span class="fn">DATE_FORMAT</span>(data_pedido, <span class="str">'%Y-%m'</span>)
+)
+<span class="kw">SELECT</span>  mes,
+        receita_mes,
+        <span class="fn">SUM</span>(receita_mes) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> mes) <span class="kw">AS</span> receita_acumulada
+<span class="kw">FROM</span>    mensal
+<span class="kw">ORDER BY</span> mes;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 23 -->
+<div class="exercise mod5">
+  <div class="ex-header">
+    <div class="ex-num">23</div>
+    <span class="ex-title">Comparação de avaliação: ano atual vs anterior (db_rh)</span>
+    <span class="ex-tag">LAG() OVER</span>
+  </div>
+  <div class="ex-body">
+    <p>Para cada funcionário com avaliação em 2022 e 2023, compare a nota dos dois anos usando <code>LAG()</code>. Mostre: nome, nota 2022, nota 2023 e a <strong>variação</strong> (2023 − 2022).</p>
+    <div class="dica">💡 <strong>Dica:</strong> <code>LAG(nota) OVER (PARTITION BY func_id ORDER BY ano)</code> traz a nota do ano anterior.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">WITH</span> notas <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>  func_id, ano, nota,
+            <span class="fn">LAG</span>(nota) <span class="kw">OVER</span> (
+                <span class="kw">PARTITION BY</span> func_id <span class="kw">ORDER BY</span> ano
+            ) <span class="kw">AS</span> nota_anterior
+    <span class="kw">FROM</span>    <span class="tbl">avaliacoes</span>
+)
+<span class="kw">SELECT</span>  f.nome,
+        n.nota_anterior  <span class="kw">AS</span> nota_2022,
+        n.nota           <span class="kw">AS</span> nota_2023,
+        n.nota - n.nota_anterior <span class="kw">AS</span> variacao
+<span class="kw">FROM</span>    notas            n
+<span class="kw">JOIN</span>    <span class="tbl">funcionarios</span>   f <span class="kw">ON</span> n.func_id <span class="kw">=</span> f.func_id
+<span class="kw">WHERE</span>   n.ano <span class="kw">=</span> <span class="str">2023</span>
+  <span class="kw">AND</span>   n.nota_anterior <span class="kw">IS NOT NULL</span>
+<span class="kw">ORDER BY</span> variacao <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 24 -->
+<div class="exercise mod5">
+  <div class="ex-header">
+    <div class="ex-num">24</div>
+    <span class="ex-title">Percentual de cada produto sobre a receita total</span>
+    <span class="ex-tag">SUM() OVER() · Percentual</span>
+  </div>
+  <div class="ex-body">
+    <p>Para cada produto vendido, calcule a receita total e o <strong>percentual que representa sobre a receita geral</strong> de todos os produtos. Mostre nome, receita e % participação.</p>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">WITH</span> receitas <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>   produto_id,
+             <span class="fn">SUM</span>(quantidade * preco_unitario) <span class="kw">AS</span> receita
+    <span class="kw">FROM</span>     <span class="tbl">itens_pedido</span>
+    <span class="kw">GROUP BY</span> produto_id
+)
+<span class="kw">SELECT</span>  p.nome_produto,
+        r.receita,
+        <span class="fn">ROUND</span>(
+            r.receita * <span class="str">100.0</span> /
+            <span class="fn">SUM</span>(r.receita) <span class="kw">OVER</span> ()
+        , <span class="str">2</span>) <span class="kw">AS</span> pct_participacao
+<span class="kw">FROM</span>    receitas  r
+<span class="kw">JOIN</span>    <span class="tbl">produtos</span>  p <span class="kw">ON</span> r.produto_id <span class="kw">=</span> p.produto_id
+<span class="kw">ORDER BY</span> r.receita <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Ex 25 — DESAFIO FINAL -->
+<div class="exercise mod5">
+  <div class="ex-header">
+    <div class="ex-num">25</div>
+    <span class="ex-title">🏆 Desafio Final — Dashboard de Clientes</span>
+    <span class="ex-tag">CTE · JOIN · Window · Condicional</span>
+  </div>
+  <div class="ex-body">
+    <p>Crie um relatório completo dos clientes ativos com:</p>
+    <ul style="margin:10px 0 14px 20px;color:#2D3748;font-size:.95rem;">
+      <li>Nome e estado do cliente</li>
+      <li>Quantidade total de pedidos</li>
+      <li>Ticket médio (média do campo <code>total</code>)</li>
+      <li>Valor do último pedido</li>
+      <li>Classificação: <strong>"VIP"</strong> se gasto total > R$3.000, caso contrário <strong>"Regular"</strong></li>
+    </ul>
+    <p>Ordene pelos clientes VIP primeiro, depois pelo maior gasto total.</p>
+    <div class="dica">💡 <strong>Dica:</strong> Use uma CTE para agregar os dados de pedidos e depois junte com clientes. Use <code>CASE WHEN</code> para a classificação.</div>
+    <span class="answer-toggle" onclick="toggle(this)">▶ Ver resposta</span>
+    <div class="answer-block">
+<pre><span class="kw">WITH</span> stats_cliente <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>   cliente_id,
+             <span class="fn">COUNT</span>(*) <span class="kw">AS</span> qtd_pedidos,
+             <span class="fn">ROUND</span>(<span class="fn">AVG</span>(total), <span class="str">2</span>) <span class="kw">AS</span> ticket_medio,
+             <span class="fn">SUM</span>(total)         <span class="kw">AS</span> gasto_total,
+             <span class="fn">MAX</span>(total)         <span class="kw">AS</span> ultimo_valor
+    <span class="kw">FROM</span>     <span class="tbl">pedidos</span>
+    <span class="kw">WHERE</span>    status <span class="kw">=</span> <span class="str">'Entregue'</span>
+    <span class="kw">GROUP BY</span> cliente_id
+)
+<span class="kw">SELECT</span>  c.nome,
+        c.estado,
+        sc.qtd_pedidos,
+        sc.ticket_medio,
+        sc.ultimo_valor,
+        sc.gasto_total,
+        <span class="kw">CASE</span>
+            <span class="kw">WHEN</span> sc.gasto_total <span class="kw">></span> <span class="str">3000</span> <span class="kw">THEN</span> <span class="str">'VIP'</span>
+            <span class="kw">ELSE</span> <span class="str">'Regular'</span>
+        <span class="kw">END</span> <span class="kw">AS</span> classificacao
+<span class="kw">FROM</span>    <span class="tbl">clientes</span>      c
+<span class="kw">JOIN</span>    stats_cliente sc <span class="kw">ON</span> c.cliente_id <span class="kw">=</span> sc.cliente_id
+<span class="kw">WHERE</span>   c.ativo <span class="kw">=</span> <span class="str">1</span>
+<span class="kw">ORDER BY</span> classificacao <span class="kw">ASC</span>, gasto_total <span class="kw">DESC</span>;
+<span class="cmt">-- 'VIP' vem antes de 'Regular' em ASC alfabético ✓</span></pre>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<footer>
+  📊 Material de estudo para transição de carreira → Analista de Dados &nbsp;|&nbsp;
+  25 exercícios · 5 módulos · 2 bancos de dados &nbsp;|&nbsp;
+  MySQL 8.0+
+</footer>
 
 <script>
-// ─────────────────────────────────────────────────────────────────────────────
-// XHR é usado pois o KOReader usa servidor TCP minimalista sem headers CORS.
-// fetch() moderno bloqueia por falta de CORS headers.
-// MIXED CONTENT: política do browser, sem solução de código. Use file://.
-// ─────────────────────────────────────────────────────────────────────────────
-
-const isHttps = location.protocol === 'https:';
-
-(function init() {
-  const ip   = localStorage.getItem('kr_ip');
-  const port = localStorage.getItem('kr_port');
-  if (ip)   document.getElementById('ip').value   = ip;
-  if (port) document.getElementById('port').value = port;
-  if (ip) updateBadge('idle', ip);
-  else openModal();
-  loadHotkeySettings();
-})();
-
-function openModal()  { document.getElementById('overlay').classList.add('open'); }
-function closeModal() { document.getElementById('overlay').classList.remove('open'); }
-function overlayClick(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
-function openHelp()  { document.getElementById('help-overlay').classList.add('open'); }
-function closeHelp() { document.getElementById('help-overlay').classList.remove('open'); }
-function helpOverlayClick(e) { if (e.target === document.getElementById('help-overlay')) closeHelp(); }
-
-function saveEndpoint() {
-  const ip   = document.getElementById('ip').value.trim();
-  const port = document.getElementById('port').value.trim() || '8081';
-  if (!ip) { document.getElementById('ip').focus(); return; }
-  localStorage.setItem('kr_ip',   ip);
-  localStorage.setItem('kr_port', port);
-  updateBadge('idle', ip);
-  log('endpoint salvo · ' + ip + ':' + port, 'ok');
-  closeModal();
-  setTimeout(testConnection, 400);
+function toggle(el) {
+  const block = el.nextElementSibling;
+  const open  = block.classList.toggle('open');
+  el.textContent = open ? '▼ Ocultar resposta' : '▶ Ver resposta';
 }
-
-function updateBadge(state, label) {
-  const dot   = document.getElementById('dot');
-  const badge = document.getElementById('conn-badge');
-  const text  = document.getElementById('conn-text');
-  dot.className   = 'dot' + (state === 'ok' ? ' ok' : state === 'err' ? ' err' : state === 'loading' ? ' loading' : '');
-  badge.className = 'conn-badge' + (state === 'ok' ? ' ok' : state === 'err' ? ' err' : '');
-  text.textContent = label || 'desconectado';
-}
-
-function base() {
-  const ip   = localStorage.getItem('kr_ip')   || '';
-  const port = localStorage.getItem('kr_port')  || '8081';
-  return 'http://' + ip + ':' + port + '/koreader';
-}
-
-function log(msg, cls) {
-  const box = document.getElementById('log');
-  const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  if (box.children.length === 1 && box.children[0].textContent.includes('aguardando')) box.innerHTML = '';
-  const line = document.createElement('div');
-  line.className = 'log-line';
-  line.innerHTML = '<span class="t">' + now + '</span><span class="' + (cls||'') + '">' + msg + '</span>';
-  box.appendChild(line);
-  box.scrollTop = box.scrollHeight;
-}
-
-// ── CORE XHR ─────────────────────────────────────────────────────────────────
-function sendXHR(path, label, onDone) {
-  const ip = localStorage.getItem('kr_ip');
-  if (!ip) { openModal(); return; }
-
-  const url = base() + path;
-  const xhr = new XMLHttpRequest();
-  let done = false;
-
-  const timeout = setTimeout(function() {
-    if (done) return;
-    done = true;
-    xhr.abort();
-    log((label || path) + ' — enviado (timeout ok)', 'ok');
-    updateBadge('ok', ip);
-    if (onDone) onDone(true);
-  }, 2500);
-
-  xhr.onreadystatechange = function() {
-    if (done) return;
-    if (xhr.readyState >= 2) {
-      done = true;
-      clearTimeout(timeout);
-      log((label || path) + ' — OK (' + (xhr.status || '?') + ')', 'ok');
-      updateBadge('ok', ip);
-      if (onDone) onDone(true);
-    }
-  };
-
-  xhr.onerror = function() {
-    if (done) return;
-    done = true;
-    clearTimeout(timeout);
-    const reason = isHttps ? 'Mixed Content (use file://)' : 'sem resposta — verifique IP/porta';
-    log((label || path) + ' — erro: ' + reason, 'err');
-    updateBadge('err', ip + ' (erro)');
-    if (onDone) onDone(false);
-  };
-
-  updateBadge('loading', ip);
-  try {
-    xhr.open('GET', url, true);
-    xhr.send();
-  } catch(e) {
-    done = true;
-    clearTimeout(timeout);
-    log((label || path) + ' — exceção: ' + e.message, 'err');
-    updateBadge('err', ip + ' (erro)');
-    if (onDone) onDone(false);
-  }
-}
-
-// ── CONEXÃO ───────────────────────────────────────────────────────────────────
-function testConnection() {
-  const ip = localStorage.getItem('kr_ip');
-  if (!ip) { openModal(); return; }
-  const btn = document.getElementById('btn-connect');
-  const lbl = document.getElementById('connect-label');
-  btn.className = 'btn-connect connecting';
-  lbl.textContent = 'Conectando...';
-  log('⟳ testando ' + ip + '…');
-  sendXHR('/event/GotoViewRel/0', 'ping', function(ok) {
-    if (ok) {
-      btn.className = 'btn-connect connected';
-      lbl.textContent = '✓ Conectado';
-    } else {
-      btn.className = 'btn-connect failed';
-      lbl.textContent = '✗ Falhou — verifique IP e porta';
-    }
-    setTimeout(function() {
-      btn.className = 'btn-connect';
-      lbl.textContent = ok ? 'Reconectar' : 'Tentar novamente';
-    }, 3500);
-  });
-}
-
-// ── PÁGINAS ───────────────────────────────────────────────────────────────────
-function nextPage() { doNextPage(); }
-function prevPage() { doPrevPage(); }
-
-function flash(id) {
-  const el = document.getElementById(id);
-  el.classList.remove('flash');
-  void el.offsetWidth;
-  el.classList.add('flash');
-}
-
-// ── ATALHOS GLOBAIS ───────────────────────────────────────────────────────────
-let hotkeyNext = { key: 'D', shift: true, ctrl: false, alt: false };
-let hotkeyPrev = { key: 'S', shift: true, ctrl: false, alt: false };
-let returnAfterPage = false;
-let recordingTarget = null; // 'next' | 'prev'
-
-function hotkeyToString(h) {
-  const parts = [];
-  if (h.ctrl)  parts.push('Ctrl');
-  if (h.alt)   parts.push('Alt');
-  if (h.shift) parts.push('Shift');
-  parts.push(h.key.length === 1 ? h.key.toUpperCase() : h.key);
-  return parts.join('+');
-}
-
-function hotkeyMatches(e, h) {
-  // Normaliza: Shift+D gera e.key='D', mas sem shift seria 'd'
-  const k = e.key.length === 1 ? e.key.toUpperCase() : e.key;
-  return k === h.key.toUpperCase()
-    && !!e.shiftKey === h.shift
-    && !!e.ctrlKey  === h.ctrl
-    && !!e.altKey   === h.alt;
-}
-
-function updateKbdLabels() {
-  const nEl = document.getElementById('kbd-next');
-  const pEl = document.getElementById('kbd-prev');
-  if (nEl) nEl.textContent = hotkeyToString(hotkeyNext);
-  if (pEl) pEl.textContent = hotkeyToString(hotkeyPrev);
-}
-
-function loadHotkeySettings() {
-  try {
-    const n = localStorage.getItem('kr_hotkey_next');
-    const p = localStorage.getItem('kr_hotkey_prev');
-    const r = localStorage.getItem('kr_hotkey_return');
-    if (n) hotkeyNext = JSON.parse(n);
-    if (p) hotkeyPrev = JSON.parse(p);
-    returnAfterPage = r === 'true';
-  } catch(ex) {}
-  const ni = document.getElementById('hotkey-next');
-  const pi = document.getElementById('hotkey-prev');
-  if (ni) ni.value = hotkeyToString(hotkeyNext);
-  if (pi) pi.value = hotkeyToString(hotkeyPrev);
-  const tog = document.getElementById('toggle-return');
-  if (tog) tog.checked = returnAfterPage;
-  updateKbdLabels();
-}
-
-function saveHotkeySettings() {
-  returnAfterPage = document.getElementById('toggle-return').checked;
-  localStorage.setItem('kr_hotkey_next',   JSON.stringify(hotkeyNext));
-  localStorage.setItem('kr_hotkey_prev',   JSON.stringify(hotkeyPrev));
-  localStorage.setItem('kr_hotkey_return', String(returnAfterPage));
-}
-
-// Recording: ao clicar no campo, ativa modo captura.
-// Um keydown no document captura a próxima tecla não-modificadora.
-function startRecording(el, target) {
-  // Cancela qualquer recording anterior
-  if (recordingTarget) cancelRecording();
-  recordingTarget = target;
-  el.classList.add('recording');
-  el.value = 'Pressione a tecla…';
-  el.dataset.recording = '1';
-}
-
-function cancelRecording() {
-  if (!recordingTarget) return;
-  const id = recordingTarget === 'next' ? 'hotkey-next' : 'hotkey-prev';
-  const h  = recordingTarget === 'next' ? hotkeyNext : hotkeyPrev;
-  const el = document.getElementById(id);
-  if (el) { el.classList.remove('recording'); el.value = hotkeyToString(h); delete el.dataset.recording; }
-  recordingTarget = null;
-}
-
-function doNextPage() {
-  flash('btn-next');
-  sendXHR('/event/GotoViewRel/1', 'próxima página', function() {
-    if (returnAfterPage) setTimeout(function() { window.blur(); }, 150);
-  });
-}
-
-function doPrevPage() {
-  flash('btn-prev');
-  sendXHR('/event/GotoViewRel/-1', 'página anterior', function() {
-    if (returnAfterPage) setTimeout(function() { window.blur(); }, 150);
-  });
-}
-
-// ── TECLADO ───────────────────────────────────────────────────────────────────
-document.addEventListener('keydown', function(e) {
-  // ── Modo gravação de atalho ──
-  if (recordingTarget) {
-    e.preventDefault();
-    e.stopPropagation();
-    const ignored = ['Shift','Control','Alt','Meta','CapsLock','Tab','Escape'];
-    if (e.key === 'Escape') { cancelRecording(); return; }
-    if (ignored.includes(e.key)) return;
-
-    const h = {
-      key:   e.key.length === 1 ? e.key.toUpperCase() : e.key,
-      shift: e.shiftKey,
-      ctrl:  e.ctrlKey,
-      alt:   e.altKey
-    };
-    const id = recordingTarget === 'next' ? 'hotkey-next' : 'hotkey-prev';
-    if (recordingTarget === 'next') hotkeyNext = h;
-    else                            hotkeyPrev = h;
-
-    const el = document.getElementById(id);
-    if (el) { el.value = hotkeyToString(h); el.classList.remove('recording'); delete el.dataset.recording; }
-    recordingTarget = null;
-    saveHotkeySettings();
-    updateKbdLabels();
-    return;
-  }
-
-  // ── Modais abertos: só Escape ──
-  if (document.getElementById('overlay').classList.contains('open')) {
-    if (e.key === 'Escape') closeModal();
-    return;
-  }
-  if (document.getElementById('help-overlay').classList.contains('open')) {
-    if (e.key === 'Escape') closeHelp();
-    return;
-  }
-
-  // ── Atalhos configurados ──
-  if (hotkeyMatches(e, hotkeyNext)) { e.preventDefault(); doNextPage(); return; }
-  if (hotkeyMatches(e, hotkeyPrev)) { e.preventDefault(); doPrevPage(); return; }
-
-  // ── Setas sempre funcionam ──
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); doNextPage(); }
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); doPrevPage(); }
-});
-  // Posiciona o tooltip do IP dinamicamente para não cortar no modal
-  document.querySelector('.ip-tip').addEventListener('mouseenter', function() {
-    const bubble = this.querySelector('.ip-tip-bubble');
-    const rect = this.getBoundingClientRect();
-    bubble.style.top  = (rect.top - bubble.offsetHeight - 8) + 'px';
-    bubble.style.left = Math.max(8, rect.left - 80) + 'px';
-  });
 </script>
 </body>
 </html>
